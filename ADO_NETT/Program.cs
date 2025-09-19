@@ -6,16 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 //ado.net
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace ADO_NETT
 {
 	internal class Program
 	{
-		static	string connectionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+		static	string connectionString = "";
 		static SqlConnection connection;
 
 		static void Main(string[] args)
 		{
+			//0) Достаем строку подключения из App.config
+			connectionString = ConfigurationManager.ConnectionStrings["Movies"].ConnectionString;
 			//1 Создаем подключение к базе данных на сервере
 			Console.WriteLine(connectionString);
 		    connection = new SqlConnection();

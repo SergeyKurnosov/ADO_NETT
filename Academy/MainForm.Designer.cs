@@ -32,13 +32,18 @@
 			this.tabPageTeachers = new System.Windows.Forms.TabPage();
 			this.tabPageDisciplines = new System.Windows.Forms.TabPage();
 			this.tabPageDirections = new System.Windows.Forms.TabPage();
+			this.dataGridViewDirections = new System.Windows.Forms.DataGridView();
 			this.tabPageGroups = new System.Windows.Forms.TabPage();
 			this.tabPageStudents = new System.Windows.Forms.TabPage();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
-			this.dataGridViewDirections = new System.Windows.Forms.DataGridView();
+			this.dataGridViewGroups = new System.Windows.Forms.DataGridView();
+			this.labelGroupsDirections = new System.Windows.Forms.Label();
+			this.comboBoxGroupsDirections = new System.Windows.Forms.ComboBox();
 			this.tabPageDirections.SuspendLayout();
-			this.tabControl1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridViewDirections)).BeginInit();
+			this.tabPageGroups.SuspendLayout();
+			this.tabControl1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dataGridViewGroups)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// statusStrip
@@ -80,8 +85,20 @@
 			this.tabPageDirections.Text = "Directions";
 			this.tabPageDirections.UseVisualStyleBackColor = true;
 			// 
+			// dataGridViewDirections
+			// 
+			this.dataGridViewDirections.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dataGridViewDirections.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dataGridViewDirections.Location = new System.Drawing.Point(3, 3);
+			this.dataGridViewDirections.Name = "dataGridViewDirections";
+			this.dataGridViewDirections.Size = new System.Drawing.Size(786, 396);
+			this.dataGridViewDirections.TabIndex = 0;
+			// 
 			// tabPageGroups
 			// 
+			this.tabPageGroups.Controls.Add(this.comboBoxGroupsDirections);
+			this.tabPageGroups.Controls.Add(this.labelGroupsDirections);
+			this.tabPageGroups.Controls.Add(this.dataGridViewGroups);
 			this.tabPageGroups.Location = new System.Drawing.Point(4, 22);
 			this.tabPageGroups.Name = "tabPageGroups";
 			this.tabPageGroups.Padding = new System.Windows.Forms.Padding(3);
@@ -114,27 +131,52 @@
 			this.tabControl1.Size = new System.Drawing.Size(800, 428);
 			this.tabControl1.TabIndex = 1;
 			// 
-			// dataGridViewDirections
+			// dataGridViewGroups
 			// 
-			this.dataGridViewDirections.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dataGridViewDirections.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.dataGridViewDirections.Location = new System.Drawing.Point(3, 3);
-			this.dataGridViewDirections.Name = "dataGridViewDirections";
-			this.dataGridViewDirections.Size = new System.Drawing.Size(786, 396);
-			this.dataGridViewDirections.TabIndex = 0;
+			this.dataGridViewGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.dataGridViewGroups.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+			this.dataGridViewGroups.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dataGridViewGroups.Location = new System.Drawing.Point(18, 36);
+			this.dataGridViewGroups.Name = "dataGridViewGroups";
+			this.dataGridViewGroups.Size = new System.Drawing.Size(766, 317);
+			this.dataGridViewGroups.TabIndex = 0;
 			// 
-			// Form1
+			// labelGroupsDirections
+			// 
+			this.labelGroupsDirections.AutoSize = true;
+			this.labelGroupsDirections.Location = new System.Drawing.Point(15, 10);
+			this.labelGroupsDirections.Name = "labelGroupsDirections";
+			this.labelGroupsDirections.Size = new System.Drawing.Size(124, 13);
+			this.labelGroupsDirections.TabIndex = 1;
+			this.labelGroupsDirections.Text = "Направление обучения";
+			// 
+			// comboBoxGroupsDirections
+			// 
+			this.comboBoxGroupsDirections.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxGroupsDirections.FormattingEnabled = true;
+			this.comboBoxGroupsDirections.Location = new System.Drawing.Point(145, 7);
+			this.comboBoxGroupsDirections.Name = "comboBoxGroupsDirections";
+			this.comboBoxGroupsDirections.Size = new System.Drawing.Size(316, 21);
+			this.comboBoxGroupsDirections.TabIndex = 2;
+			this.comboBoxGroupsDirections.SelectedIndexChanged += new System.EventHandler(this.comboBoxGroupsDirections_SelectedIndexChanged);
+			// 
+			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.statusStrip);
-			this.Name = "Form1";
+			this.Name = "MainForm";
 			this.Text = "Academy PD_411";
 			this.tabPageDirections.ResumeLayout(false);
-			this.tabControl1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridViewDirections)).EndInit();
+			this.tabPageGroups.ResumeLayout(false);
+			this.tabPageGroups.PerformLayout();
+			this.tabControl1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.dataGridViewGroups)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -150,6 +192,9 @@
 		private System.Windows.Forms.TabPage tabPageStudents;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.DataGridView dataGridViewDirections;
+		private System.Windows.Forms.DataGridView dataGridViewGroups;
+		private System.Windows.Forms.ComboBox comboBoxGroupsDirections;
+		private System.Windows.Forms.Label labelGroupsDirections;
 	}
 }
 

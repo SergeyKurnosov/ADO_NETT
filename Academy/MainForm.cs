@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Runtime.InteropServices;
 
 namespace Academy
 {
@@ -17,25 +18,50 @@ namespace Academy
 		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 		SqlConnection connection;
 		Dictionary<string, int> d_groupsDirection;
+
+
+
+
+		readonly string[] statusBarMessages = new string[]
+		{
+			"Количество студентов ",
+			"Количество групп ",
+			"Количество направлений ",
+			"Количество дисциплин ",
+			"Количество преподователей "
+		};
 		public MainForm()
 		{
 			InitializeComponent();
+			AllocConsole();
 			connection = new SqlConnection(connecctionString);
 
 			//	LoadDirections();
 			//	LoadGroups();
-			dataGridViewDirections.DataSource = Select("*", "Directions");
-			dataGridViewGroups.DataSource = Select
-				(
-				"group_id,group_name,direction", "Groups,Directions", "direction=direction_id"
-				);
-
+			Console.WriteLine(this.Name);
+			Console.WriteLine(tabControl.TabCount);
 
 			d_groupsDirection = LoadDataToCombobox("*", "Directions");
 			comboBoxGroupsDirections.Items.AddRange(d_groupsDirection.Keys.ToArray());
 			comboBoxGroupsDirections.SelectedIndex = 0;
 
+			tabControl.SelectedIndex = 1;
+
 		}
+
+		void LoadTab(int i)
+		{
+			string tableName = tabControl.TabPages[i].Name.Remove(0, "tabPage".Length);
+			DataGridView dataGridView = this.Controls.Find($"dataGridView{tableName}", true)[0] as DataGridView;
+			dataGridView.DataSource = Select("*", tableName);
+			toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
+		}
+
+		void FillStatusBar(int i)
+		{
+
+		}
+
 
 		DataTable Select(string fields, string tables, string conditions = "")
 		{
@@ -63,64 +89,6 @@ namespace Academy
 			connection.Close();
 
 			return table;
-		}
-		void LoadDirections()
-		{
-			string cmd = 
-				@"SELECT direction_id AS N'ID' ,direction_name AS N'Направление', COUNT(group_id) AS N'Количество групп'
-FROM Groups
-RIGHT JOIN Directions ON (direction=direction_id)
-GROUP BY direction_id,direction_name;";
-			SqlCommand command = new SqlCommand(cmd, connection);
-			connection.Open();
-			SqlDataReader reader = command.ExecuteReader();
-			DataTable table = new DataTable();
-			for (int i = 0; i < reader.FieldCount; i++)
-			{
-				table.Columns.Add(reader.GetName(i));
-			}
-			while (reader.Read())
-			{
-				DataRow row = table.NewRow();
-				for (int i = 0; i < reader.FieldCount; i++)
-				{
-					row[i] = reader[i];
-				}
-				table.Rows.Add(row);
-			}
-			reader.Close();
-			connection.Close();
-			dataGridViewDirections.DataSource = table;
-		}
-
-		void LoadGroups()
-		{
-			string cmd =
-				@"SELECT group_id AS N'ID' ,direction_name AS N'Группа', COUNT(stud_id) AS N'Количество студентов',direction_name AS N'Название'
-FROM Students
-RIGHT JOIN Groups ON ([group]=group_id)
-      JOIN Directions ON (direction=direction_id)
-GROUP BY group_id, group_name, direction,direction_name;";
-			SqlCommand command = new SqlCommand(cmd, connection);
-			connection.Open();
-			SqlDataReader reader = command.ExecuteReader();
-			DataTable table = new DataTable();
-			for (int i = 0; i < reader.FieldCount; i++)
-			{
-				table.Columns.Add(reader.GetName(i));
-			}
-			while (reader.Read())
-			{
-				DataRow row = table.NewRow();
-				for (int i = 0; i < reader.FieldCount; i++)
-				{
-					row[i] = reader[i];
-				}
-				table.Rows.Add(row);
-			}
-			reader.Close();
-			connection.Close();
-			dataGridViewGroups.DataSource = table;
 		}
 
 		Dictionary<string,int> LoadDataToCombobox(string fields, string tables)
@@ -153,5 +121,13 @@ GROUP BY group_id, group_name, direction,direction_name;";
 				condition
 				);
 		}
+		[DllImport("kernel32.dll")]
+		static extern void AllocConsole();
+
+		private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			LoadTab((sender as TabControl).SelectedIndex);
+		}
 	}
+
 }

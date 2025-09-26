@@ -14,7 +14,6 @@ namespace Academy
 {
 	public partial class MainForm : Form
 	{
-
 		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 		SqlConnection connection;
 		Dictionary<string, int> d_groupsDirection;
@@ -28,7 +27,7 @@ namespace Academy
 					),
 				new Query
 				(
-					"group_id,group_name,direction_name",
+					$"group_id,group_name,direction_name,dbo.DecimalToBinary(learning_days) AS days_learning", // Функция dbo.DecimalToBinary() уже была создана в SQL
 					"Groups,Directions",
 					"direction=direction_id"
 				),
@@ -37,6 +36,7 @@ namespace Academy
 				new Query("*", "Teachers"),
 			};
 
+	//	readonly string[] daysWeek = new string[] { "Пн_", "Вт_", "Ср_", "Чт_", "Пт_", "Сб_", "Вс" };
 
 		readonly string[] statusBarMessages = new string[]
 		{
@@ -54,8 +54,8 @@ namespace Academy
 
 			//	LoadDirections();
 			//	LoadGroups();
-			Console.WriteLine(this.Name);
-			Console.WriteLine(tabControl.TabCount);
+		//	Console.WriteLine(this.Name);
+		//	Console.WriteLine(tabControl.TabCount);
 
 			d_groupsDirection = LoadDataToCombobox("*", "Directions");
 			comboBoxGroupsDirections.Items.AddRange(d_groupsDirection.Keys.ToArray());
@@ -69,6 +69,38 @@ namespace Academy
 					+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
 			}
 
+			//List<string> fieldsTeachers = GetNamesFields("Teachers");
+
+			//string All_fieldsTeachersForQuery = "";      // все имена полей таблицы
+
+			//string Not_NullfieldsTeachersForQuery = "";  // имена полей таблицы для которых есть ненулевые значения
+			//List<string> values = new List<string> { "eee", "eee", "", "eee", "eee", "", "eee", "eee", "eee", ""};
+
+			//for(int i = 0;i<fieldsTeachers.Count;i++)
+			//{
+			//	if (i != 0) All_fieldsTeachersForQuery += ", ";
+
+			//	if (!String.IsNullOrEmpty(values[i]))
+			//	{
+
+
+			//		if (i != 0) Not_NullfieldsTeachersForQuery += ", ";
+
+			//		Not_NullfieldsTeachersForQuery += fieldsTeachers[i];
+
+			//	}
+			//	All_fieldsTeachersForQuery += fieldsTeachers[i];
+			//}
+
+			//Console.WriteLine(All_fieldsTeachersForQuery);
+			//Console.WriteLine(Not_NullfieldsTeachersForQuery);
+
+			
+
+			// проверка на пустое ли значение (цикл по именам полей)
+
+			
+			
 
 		}
 
@@ -124,7 +156,6 @@ namespace Academy
 			SqlDataReader reader = command.ExecuteReader ();
 			while (reader.Read())
 			{
-				//	comboBoxGroupsDirections.Items.Add(reader[1]);
 				dictionary.Add(reader[1].ToString(), Convert.ToInt32( reader[0]));
 			}
 			reader.Close();
@@ -139,7 +170,7 @@ namespace Academy
 				condition += $" AND direction={d_groupsDirection[comboBoxGroupsDirections.SelectedItem.ToString()]}";
 			dataGridViewGroups.DataSource = Select
 				(
-				"group_id,group_name,direction",
+				"group_id,group_name,direction_name,dbo.DecimalToBinary(learning_days) AS days_learning",
 				"Groups,Directions",
 				condition
 				);
@@ -156,7 +187,13 @@ namespace Academy
 			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount-1}";
 		}
 
+		private void tabControl_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			TabControl tabControl = sender as TabControl;
+			DinamicForm dinamicForm = new DinamicForm(tabControl.SelectedTab.Text, connection);
+			dinamicForm.ShowForm();
 
+		}
 	}
 
 }

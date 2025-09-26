@@ -28,7 +28,7 @@ namespace Academy
 					),
 				new Query
 				(
-					"group_id,group_name,direction_name",
+					"group_id,group_name,learning_days,start_time,direction_name",
 					"Groups,Directions",
 					"direction=direction_id"
 				),
@@ -61,11 +61,11 @@ namespace Academy
 			comboBoxGroupsDirections.Items.AddRange(d_groupsDirection.Keys.ToArray());
 			comboBoxGroupsDirections.SelectedIndex = 0;
 
-			tabControl.SelectedIndex = 1;
+			tabControl.SelectedIndex = 0;
 
-			for(int i = 0; i<tabControl.TabCount; i++)
+			for (int i = 0; i < tabControl.TabCount; i++)
 			{
-				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded 
+				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
 					+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
 			}
 
@@ -77,7 +77,8 @@ namespace Academy
 			string tableName = tabControl.TabPages[i].Name.Remove(0, "tabPage".Length);
 			DataGridView dataGridView = this.Controls.Find($"dataGridView{tableName}", true)[0] as DataGridView;
 			dataGridView.DataSource = Select(queries[i].Fields, queries[i].Tables, queries[i].Condition);
-		//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
+			//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
+			if (i == 1) ConvertLearningDays();
 		}
 
 		void FillStatusBar(int i)
@@ -91,20 +92,20 @@ namespace Academy
 			DataTable table = new DataTable();
 			string cmd =
 	$@"SELECT {fields} FROM	{tables}";
-			if (!string.IsNullOrWhiteSpace(conditions)) 
+			if (!string.IsNullOrWhiteSpace(conditions))
 				cmd += $" WHERE {conditions}";
 			cmd += ";";
 			SqlCommand command = new SqlCommand(cmd, connection);
 			connection.Open();
 			SqlDataReader reader = command.ExecuteReader();
-			for(int i = 0; i < reader.FieldCount; i++)
+			for (int i = 0; i < reader.FieldCount; i++)
 			{
 				table.Columns.Add(reader.GetName(i));
 			}
 			while (reader.Read())
 			{
 				DataRow row = table.NewRow();
-				for(int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
+				for (int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
 
 				table.Rows.Add(row);
 			}
@@ -114,18 +115,28 @@ namespace Academy
 			return table;
 		}
 
-		Dictionary<string,int> LoadDataToCombobox(string fields, string tables)
+		void ConvertLearningDays()
 		{
-			Dictionary<string,int> dictionary = new Dictionary<string,int>();
+			for (int i = 0; i < dataGridViewGroups.RowCount; i++)
+			{
+
+				dataGridViewGroups.Rows[i].Cells["learning_days"].Value=
+				 new Week(Convert.ToByte(dataGridViewGroups.Rows[i].Cells["learning_days"].Value));
+			}
+		}
+
+		Dictionary<string, int> LoadDataToCombobox(string fields, string tables)
+		{
+			Dictionary<string, int> dictionary = new Dictionary<string, int>();
 			dictionary.Add("Все", 0);
 			string cmd = $"SELECT {fields} FROM {tables}";
-			SqlCommand command = new SqlCommand (cmd, connection);
+			SqlCommand command = new SqlCommand(cmd, connection);
 			connection.Open();
-			SqlDataReader reader = command.ExecuteReader ();
+			SqlDataReader reader = command.ExecuteReader();
 			while (reader.Read())
 			{
 				//	comboBoxGroupsDirections.Items.Add(reader[1]);
-				dictionary.Add(reader[1].ToString(), Convert.ToInt32( reader[0]));
+				dictionary.Add(reader[1].ToString(), Convert.ToInt32(reader[0]));
 			}
 			reader.Close();
 			connection.Close();
@@ -135,7 +146,7 @@ namespace Academy
 		private void comboBoxGroupsDirections_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			string condition = "direction=direction_id";
-			if (comboBoxGroupsDirections.SelectedItem.ToString() != "Все") 
+			if (comboBoxGroupsDirections.SelectedItem.ToString() != "Все")
 				condition += $" AND direction={d_groupsDirection[comboBoxGroupsDirections.SelectedItem.ToString()]}";
 			dataGridViewGroups.DataSource = Select
 				(
@@ -153,7 +164,7 @@ namespace Academy
 		}
 		private void dataGridViewChanged(object sender, EventArgs e)
 		{
-			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount-1}";
+			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount - 1}";
 		}
 
 

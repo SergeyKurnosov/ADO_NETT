@@ -27,7 +27,7 @@ namespace Academy
 					),
 				new Query
 				(
-					$"group_id,group_name,direction_name,dbo.DecimalToBinary(learning_days) AS days_learning", // Функция dbo.DecimalToBinary() уже была создана в SQL
+					$"group_id,group_name,direction_name,dbo.DecimalToBinary(learning_days) AS days_learning",
 					"Groups,Directions",
 					"direction=direction_id"
 				),
@@ -36,7 +36,6 @@ namespace Academy
 				new Query("*", "Teachers"),
 			};
 
-	//	readonly string[] daysWeek = new string[] { "Пн_", "Вт_", "Ср_", "Чт_", "Пт_", "Сб_", "Вс" };
 
 		readonly string[] statusBarMessages = new string[]
 		{
@@ -54,8 +53,8 @@ namespace Academy
 
 			//	LoadDirections();
 			//	LoadGroups();
-		//	Console.WriteLine(this.Name);
-		//	Console.WriteLine(tabControl.TabCount);
+			//	Console.WriteLine(this.Name);
+			//	Console.WriteLine(tabControl.TabCount);
 
 			d_groupsDirection = LoadDataToCombobox("*", "Directions");
 			comboBoxGroupsDirections.Items.AddRange(d_groupsDirection.Keys.ToArray());
@@ -63,10 +62,13 @@ namespace Academy
 
 			tabControl.SelectedIndex = 1;
 
-			for(int i = 0; i<tabControl.TabCount; i++)
+			for (int i = 0; i < tabControl.TabCount; i++)
 			{
-				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded 
+				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
 					+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
+
+				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).CellDoubleClick
+					+= this.DataGridViewAll_CellDoubleClick;
 			}
 
 			//List<string> fieldsTeachers = GetNamesFields("Teachers");
@@ -95,12 +97,12 @@ namespace Academy
 			//Console.WriteLine(All_fieldsTeachersForQuery);
 			//Console.WriteLine(Not_NullfieldsTeachersForQuery);
 
-			
+
 
 			// проверка на пустое ли значение (цикл по именам полей)
 
-			
-			
+
+
 
 		}
 
@@ -109,7 +111,7 @@ namespace Academy
 			string tableName = tabControl.TabPages[i].Name.Remove(0, "tabPage".Length);
 			DataGridView dataGridView = this.Controls.Find($"dataGridView{tableName}", true)[0] as DataGridView;
 			dataGridView.DataSource = Select(queries[i].Fields, queries[i].Tables, queries[i].Condition);
-		//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
+			//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
 		}
 
 		void FillStatusBar(int i)
@@ -123,20 +125,20 @@ namespace Academy
 			DataTable table = new DataTable();
 			string cmd =
 	$@"SELECT {fields} FROM	{tables}";
-			if (!string.IsNullOrWhiteSpace(conditions)) 
+			if (!string.IsNullOrWhiteSpace(conditions))
 				cmd += $" WHERE {conditions}";
 			cmd += ";";
 			SqlCommand command = new SqlCommand(cmd, connection);
 			connection.Open();
 			SqlDataReader reader = command.ExecuteReader();
-			for(int i = 0; i < reader.FieldCount; i++)
+			for (int i = 0; i < reader.FieldCount; i++)
 			{
 				table.Columns.Add(reader.GetName(i));
 			}
 			while (reader.Read())
 			{
 				DataRow row = table.NewRow();
-				for(int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
+				for (int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
 
 				table.Rows.Add(row);
 			}
@@ -146,17 +148,17 @@ namespace Academy
 			return table;
 		}
 
-		Dictionary<string,int> LoadDataToCombobox(string fields, string tables)
+		Dictionary<string, int> LoadDataToCombobox(string fields, string tables)
 		{
-			Dictionary<string,int> dictionary = new Dictionary<string,int>();
+			Dictionary<string, int> dictionary = new Dictionary<string, int>();
 			dictionary.Add("Все", 0);
 			string cmd = $"SELECT {fields} FROM {tables}";
-			SqlCommand command = new SqlCommand (cmd, connection);
+			SqlCommand command = new SqlCommand(cmd, connection);
 			connection.Open();
-			SqlDataReader reader = command.ExecuteReader ();
+			SqlDataReader reader = command.ExecuteReader();
 			while (reader.Read())
 			{
-				dictionary.Add(reader[1].ToString(), Convert.ToInt32( reader[0]));
+				dictionary.Add(reader[1].ToString(), Convert.ToInt32(reader[0]));
 			}
 			reader.Close();
 			connection.Close();
@@ -166,7 +168,7 @@ namespace Academy
 		private void comboBoxGroupsDirections_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			string condition = "direction=direction_id";
-			if (comboBoxGroupsDirections.SelectedItem.ToString() != "Все") 
+			if (comboBoxGroupsDirections.SelectedItem.ToString() != "Все")
 				condition += $" AND direction={d_groupsDirection[comboBoxGroupsDirections.SelectedItem.ToString()]}";
 			dataGridViewGroups.DataSource = Select
 				(
@@ -184,8 +186,10 @@ namespace Academy
 		}
 		private void dataGridViewChanged(object sender, EventArgs e)
 		{
-			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount-1}";
+			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount - 1}";
 		}
+
+
 
 		private void tabControl_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
@@ -193,6 +197,18 @@ namespace Academy
 			DinamicForm dinamicForm = new DinamicForm(tabControl.SelectedTab.Text, connection);
 			dinamicForm.ShowForm();
 
+		}
+
+		private void DataGridViewAll_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex >= 0)
+			{
+				DataGridViewRow row = (sender as DataGridView).Rows[e.RowIndex];
+				var id = row.Cells[0].Value;
+
+				DinamicForm dinamicForm = new DinamicForm(tabControl.SelectedTab.Text, connection, false , Convert.ToInt32(id));
+				dinamicForm.ShowForm();
+			}
 		}
 	}
 

@@ -17,84 +17,67 @@ namespace DataSet
 	{
 		string connectionString = "";
 		SqlConnection connection = null;
-		System.Data.DataSet GroupsRelatedData = null;
+	//	System.Data.DataSet GroupsRelatedData = null;
 		public MainForm()
 		{
 			InitializeComponent();
 			connectionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
 			connection = new SqlConnection(connectionString);
 
-			//1 создаем dataset 
-			GroupsRelatedData = new System.Data.DataSet(nameof(GroupsRelatedData));
-			//2 добавляем таблицы в dataset
-			const string dsTable_Directions = "Directions";
-			const string dstDirections_col_direction_id = "direction_id";
-			const string dstDirections_col_direction_name = "direction_name";
-			GroupsRelatedData.Tables.Add(dsTable_Directions);
-			// добавляем поля в таблицу 
-			GroupsRelatedData.Tables[dsTable_Directions].Columns.Add(dstDirections_col_direction_id);
-			GroupsRelatedData.Tables [dsTable_Directions].Columns.Add(dstDirections_col_direction_name);
-			// выбираем первичный ключ
-			GroupsRelatedData.Tables[dsTable_Directions].PrimaryKey =
-				new DataColumn[] { GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id] };
-
-			const string dsTable_Groups = "Groups";
-			const string dstGroups_col_group_id = "group_id";
-			const string dstGroups_col_group_name = "group_name";
-			const string dstGroups_col_direction = "direction";
-			const string dstGroups_col_learning_days = "learning_days";
-			const string dstGroups_col_start_time = "start_time";
-			GroupsRelatedData.Tables.Add (dsTable_Groups);
-			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_group_id);
-			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_group_name);
-			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_direction);
-			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_learning_days);
-			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_start_time);
-			GroupsRelatedData.Tables[dsTable_Groups].PrimaryKey =
-				new DataColumn[] { GroupsRelatedData.Tables[dsTable_Groups].Columns[dstGroups_col_group_id] };
-			//3 строим связи между таблицами
-			string dsRelation_GroupsDirections = "GroupsDirections";
-			GroupsRelatedData.Relations.Add
-				(
-				dsRelation_GroupsDirections,
-				GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id],			// parent field PK
-				GroupsRelatedData.Tables[dsTable_Groups].Columns[dstGroups_col_direction]						// child field
-				);
-			//4 Загружаем данные в таблицу
-			string directions_cmd = "SELECT * FROM Directions";
-			string groups_cmd = "SELECT * FROM Groups";
-
-			SqlDataAdapter directionsAdapter = new SqlDataAdapter(directions_cmd, connection);
-			SqlDataAdapter groupsAdapter = new SqlDataAdapter(groups_cmd, connection);
-
-			directionsAdapter.Fill(GroupsRelatedData.Tables[dsTable_Directions]);
-			groupsAdapter.Fill(GroupsRelatedData.Tables[dsTable_Groups]);
-
 			AllocConsole();
-			foreach(DataRow row in GroupsRelatedData.Tables[dsTable_Directions].Rows)
-			{
-				Console.WriteLine($"{row[dstDirections_col_direction_id]}\t{row[dstDirections_col_direction_name]}");
-			}
 
-			Console.WriteLine("\n============================\n");
-			//foreach (DataRow row in GroupsRelatedData.Tables[dsTable_Directions].ChildRelations)
-			//{
-			//	for (int i = 0; i < row.GetChildRows(dsRelation_GroupsDirections).Length; i++)
-			//	{
-			//	Console.Write($"{row[i]}\t");
+			DTS dts = new DTS(connectionString, connection);
+			dts.Generic_Table("Directions");
+			dts.Generic_Table("Groups");
 
-			//	}
-			//	Console.WriteLine();
-			//}
-			DataRow[] RPO = GroupsRelatedData.Tables[dsTable_Directions].Rows[0].GetChildRows(dsRelation_GroupsDirections);
-			for (int i = 0; i < RPO.Length; i++)
+		//	dts.Vivodilka();
+
+			TabControl tabControl = new TabControl();
+			tabControl.Dock = DockStyle.Fill;
+			this.Controls.Add(tabControl);
+
+
+			TabPage tabPage = new TabPage();
+			for (int i = 0; i < dts.ds.Tables.Count; i++)
 			{
-				for (int j = 0; j < RPO[i].ItemArray.Length; j++)
+				tabPage = new TabPage(dts.ds.Tables[i].TableName);
+
+				DataGridView dataGridView = new DataGridView();
+				dataGridView.Top = 50;
+				dataGridView.Width = 790;
+				dataGridView.Height = 350;
+				dataGridView.DataSource = dts.ds.Tables[i];
+				tabPage.Controls.Add(dataGridView);
+
+				
+				if (dts.ds.Tables[i].TableName == "Groups")
 				{
-					Console.Write($"{RPO[i].ItemArray[j]}\t\t");
+					ComboBox comboBox = new ComboBox();
+					comboBox.Location = new Point(10, 10);
+					comboBox.Size = new Size(150, 25);
+					comboBox.Items.AddRange(new string[] { "Опция 1", "Опция 2", "Опция 3" });
+					comboBox.SelectedIndex = 0;
+					tabPage.Controls.Add(comboBox);
 				}
-				Console.WriteLine();
+
+				tabControl.TabPages.Add(tabPage);
 			}
+
+			//for (int i = 0; i < tabControl.TabPages.Count; i++)
+			//{
+			//	if (tabControl.TabPages[i].Name == "Groups")
+			//	{
+			//		ComboBox comboBox = new ComboBox();
+			//		comboBox.Location = new Point(10, 10);
+			//		comboBox.Size = new Size(150, 25);
+			//		comboBox.Items.AddRange(new string[] { "Опция 1", "Опция 2", "Опция 3" });
+			//		comboBox.SelectedIndex = 0;
+			//		tabPage.Controls.Add(comboBox);
+			//	}
+			//}
+
+
+
 		}
 
 		[DllImport("kernel32.dll")]
@@ -104,4 +87,5 @@ namespace DataSet
 
 
 	}
+
 }

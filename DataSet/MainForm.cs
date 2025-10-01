@@ -18,12 +18,21 @@ namespace DataSet
 		string connectionString = "";
 		SqlConnection connection = null;
 		System.Data.DataSet GroupsRelatedData = null;
+		System.Data.DataSet DisciplinesDirectionsRelation = null;
 		public MainForm()
 		{
 			InitializeComponent();
 			connectionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
 			connection = new SqlConnection(connectionString);
 
+			InitGroupsRelatedData();
+			InitDisciplinesDirectionsRelation();
+
+
+		}
+
+		void InitGroupsRelatedData()
+		{
 			//1 создаем dataset 
 			GroupsRelatedData = new System.Data.DataSet(nameof(GroupsRelatedData));
 			//2 добавляем таблицы в dataset
@@ -33,7 +42,7 @@ namespace DataSet
 			GroupsRelatedData.Tables.Add(dsTable_Directions);
 			// добавляем поля в таблицу 
 			GroupsRelatedData.Tables[dsTable_Directions].Columns.Add(dstDirections_col_direction_id);
-			GroupsRelatedData.Tables [dsTable_Directions].Columns.Add(dstDirections_col_direction_name);
+			GroupsRelatedData.Tables[dsTable_Directions].Columns.Add(dstDirections_col_direction_name);
 			// выбираем первичный ключ
 			GroupsRelatedData.Tables[dsTable_Directions].PrimaryKey =
 				new DataColumn[] { GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id] };
@@ -44,7 +53,7 @@ namespace DataSet
 			const string dstGroups_col_direction = "direction";
 			const string dstGroups_col_learning_days = "learning_days";
 			const string dstGroups_col_start_time = "start_time";
-			GroupsRelatedData.Tables.Add (dsTable_Groups);
+			GroupsRelatedData.Tables.Add(dsTable_Groups);
 			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_group_id);
 			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_group_name);
 			GroupsRelatedData.Tables[dsTable_Groups].Columns.Add(dstGroups_col_direction);
@@ -57,8 +66,8 @@ namespace DataSet
 			GroupsRelatedData.Relations.Add
 				(
 				dsRelation_GroupsDirections,
-				GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id],			// parent field PK
-				GroupsRelatedData.Tables[dsTable_Groups].Columns[dstGroups_col_direction]						// child field
+				GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id],           // parent field PK
+				GroupsRelatedData.Tables[dsTable_Groups].Columns[dstGroups_col_direction]                       // child field
 				);
 			//4 Загружаем данные в таблицу
 			string directions_cmd = "SELECT * FROM Directions";
@@ -71,7 +80,7 @@ namespace DataSet
 			groupsAdapter.Fill(GroupsRelatedData.Tables[dsTable_Groups]);
 
 			AllocConsole();
-			foreach(DataRow row in GroupsRelatedData.Tables[dsTable_Directions].Rows)
+			foreach (DataRow row in GroupsRelatedData.Tables[dsTable_Directions].Rows)
 			{
 				Console.WriteLine($"{row[dstDirections_col_direction_id]}\t{row[dstDirections_col_direction_name]}");
 			}
@@ -104,17 +113,92 @@ namespace DataSet
 			comboBoxStudentsDirection.DisplayMember = GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_name].ToString();
 			comboBoxStudentsDirection.ValueMember = GroupsRelatedData.Tables[dsTable_Directions].Columns[dstDirections_col_direction_id].ToString();
 
-			comboBoxStudentsGroup.SelectedIndexChanged += new EventHandler( GetKeyValue);
+			comboBoxStudentsGroup.SelectedIndexChanged += new EventHandler(GetKeyValue);
 			comboBoxStudentsDirection.SelectedIndexChanged += new EventHandler(GetKeyValue);
 
+		}
+
+		void InitDisciplinesDirectionsRelation()
+		{
+			DisciplinesDirectionsRelation = new System.Data.DataSet(nameof(DisciplinesDirectionsRelation));
+			string dsTable_Disciplines = "Disciplines";
+			string dstDisciplines_discipline_id = "discipline_id";
+			string dstDisciplines_discipline_name = "discipline_name";
+			string dstDisciplines_number_of_lessons = "number_of_lessons";
+			DisciplinesDirectionsRelation.Tables.Add(dsTable_Disciplines);
+			DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].Columns.Add(dstDisciplines_discipline_id);
+			DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].Columns.Add(dstDisciplines_discipline_name);
+			DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].Columns.Add(dstDisciplines_number_of_lessons);
+			DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].PrimaryKey =
+				new DataColumn[] { DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].Columns[dstDisciplines_discipline_id] };
+
+			string dsTable_Directions = "Directions";
+			string dstDirections_direction_id = "direction_id";
+			string dstDirections_direction_name = "direction_name";
+			DisciplinesDirectionsRelation.Tables.Add(dsTable_Directions);
+			DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns.Add(dstDirections_direction_id);
+			DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns.Add(dstDirections_direction_name);
+			DisciplinesDirectionsRelation.Tables[dsTable_Directions].PrimaryKey =
+				new DataColumn[] { DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns[dstDirections_direction_id] };
+
+			string dsTable_DDR = "DisciplinesDirectionsRelation";
+			string dstDDR_discipline = "discipline";
+			string dstDDR_direction = "direction";
+			DisciplinesDirectionsRelation.Tables.Add(dsTable_DDR);
+			DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns.Add(dstDDR_direction);
+			DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns.Add(dstDDR_discipline);
+			DisciplinesDirectionsRelation.Tables[dsTable_DDR].PrimaryKey =
+				new DataColumn[]
+				{
+					DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns[dstDDR_discipline],
+					DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns[dstDDR_direction]
+				};
 
 
+			string dsrDiscipline = "Discipline";
+			string dsrDirection = "Directions";
+			DisciplinesDirectionsRelation.Relations.Add
+				(
+				new DataRelation
+					(
+					dsrDiscipline,
+					DisciplinesDirectionsRelation.Tables[dsTable_Disciplines].Columns[dstDisciplines_discipline_id],
+					DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns[dstDDR_discipline]
+					)
+				);
+			DisciplinesDirectionsRelation.Relations.Add
+				(
+				new DataRelation
+					(
+					dsrDirection,
+					DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns[dstDirections_direction_id],
+					DisciplinesDirectionsRelation.Tables[dsTable_DDR].Columns[dstDDR_direction]
+					)
+				);
+			string cmd_disciplines = "SELECT * FROM Disciplines";
+			string cmd_directions = "SELECT * FROM Directions";
+			string cmd_DDR = $"SELECT * FROM {dsTable_DDR}";
 
+			SqlDataAdapter disciplinesAdapter = new SqlDataAdapter(cmd_disciplines, connection);
+			SqlDataAdapter directionsAdapter = new SqlDataAdapter(cmd_directions, connection);
+			SqlDataAdapter DDRAdapter = new SqlDataAdapter(cmd_DDR, connection);
+
+			disciplinesAdapter.Fill(DisciplinesDirectionsRelation.Tables[dsTable_Disciplines]);
+			directionsAdapter.Fill(DisciplinesDirectionsRelation.Tables[dsTable_Directions]);
+			DDRAdapter.Fill(DisciplinesDirectionsRelation.Tables[dsTable_DDR]);
+
+			//////////////////////////////////////////////
+			///
+
+			dataGridViewDiscipline.DataSource = DisciplinesDirectionsRelation.Tables[dsTable_Disciplines];
+			comboBoxDisciplinesForDirection.DataSource = DisciplinesDirectionsRelation.Tables[dsTable_Directions];
+			comboBoxDisciplinesForDirection.DisplayMember = DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns[dstDirections_direction_name].ToString();
+			comboBoxDisciplinesForDirection.ValueMember = DisciplinesDirectionsRelation.Tables[dsTable_Directions].Columns[dstDirections_direction_id].ToString();
 		}
 
 		void GetKeyValue(object sender, EventArgs e)
 		{
-			Console.WriteLine( $"{(sender as ComboBox).Name}:\t{(sender as ComboBox).SelectedValue}");
+			Console.WriteLine($"{(sender as ComboBox).Name}:\t{(sender as ComboBox).SelectedValue}");
 		}
 
 		[DllImport("kernel32.dll")]
@@ -124,11 +208,31 @@ namespace DataSet
 
 		private void comboBoxStudentsDirection_SelectedIndexChanged(object sender, EventArgs e)
 		{
-		 comboBoxStudentsGroup.DataSource = 
-				GroupsRelatedData.Tables["Groups"].Select
-				(
-				$"direction={comboBoxStudentsDirection.SelectedValue}"
-				).CopyToDataTable();
+
+			//	comboBoxStudentsGroup.DataSource = GroupsRelatedData.Tables["Groups"];
+			try
+			{
+				comboBoxStudentsGroup.Enabled = true;
+				comboBoxStudentsGroup.DataSource =
+			   GroupsRelatedData.Tables["Groups"].Select
+			   (
+			   $"direction={comboBoxStudentsDirection.SelectedValue}"
+			   ).CopyToDataTable();
+			}
+			catch (Exception ex)
+			{
+
+				comboBoxStudentsGroup.Enabled = false;
+			}
+		}
+
+		private void comboBoxDisciplinesForDirection_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			dataGridViewDiscipline.DataSource =
+				DisciplinesDirectionsRelation
+				.Tables["DisciplinesDirectionsRelation"]
+				.ParentRelations["Discipline"]
+				.ParentTable;
 		}
 	}
 }

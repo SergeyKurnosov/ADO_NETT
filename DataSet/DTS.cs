@@ -30,12 +30,13 @@ namespace DataSet
 			List<string> columns_names = Get_Column_Names(table_name);
 			List<string> foreign_key_names = Get_Names_Foreign_Keys(table_name);
 			List<string> foreign_key_fields = new List<string>();
+			List<string> primary_keys_fields = Get_Names_Primary_Keys(table_name);
+			List<string> types_fields = Get_Column_Types(table_name);
 			for (int i = 0; i < foreign_key_names.Count; i++)
 			{
 				foreign_key_fields.Add(Get_Name_Field_Foreign_Keys(table_name, foreign_key_names[i]));
-	
+
 			}
-			string primary_key_field = Get_Name_Primary_Key(table_name);
 
 
 			Console.WriteLine("\nall columns:");
@@ -44,7 +45,9 @@ namespace DataSet
 				Console.WriteLine(columns_names[i]);
 			}
 			Console.WriteLine("\npk:");
-			Console.WriteLine(primary_key_field);
+			for (int i = 0; i < primary_keys_fields.Count; i++)
+				Console.WriteLine(primary_keys_fields[i]);
+
 			for (int i = 0; i < foreign_key_names.Count; i++)
 			{
 				Console.WriteLine("\nname fk:");
@@ -53,21 +56,48 @@ namespace DataSet
 				Console.WriteLine(Get_Name_Field_Foreign_Keys(table_name, foreign_key_names[i]));
 			}
 
+
+
 			////////////////////////////////////////////////////////
+			///
+			for (int i = 0; i < types_fields.Count; i++)
+				Console.WriteLine(types_fields[i]);
+
 			for (int i = 0; i < columns_names.Count; i++)
 			{
-				dataTable.Columns.Add(columns_names[i]);
+				//if (types_fields[i].Contains("Byte[]"))
+				//{
+				//	DataColumn byteColumn = new DataColumn(columns_names[i], typeof(byte[]));
+				//	dataTable.Columns.Add(byteColumn);
+				//}
+				if (types_fields[i].Contains("Byte[]"))
+				{
+					DataColumn byteColumn = new DataColumn(columns_names[i], typeof(byte[]));
+					dataTable.Columns.Add(byteColumn);
+				}
+				else
+				{
+					dataTable.Columns.Add(columns_names[i]);
+				}
+
+
 			}
-			dataTable.PrimaryKey =
-				new DataColumn[] { dataTable.Columns[primary_key_field] };
+
+			DataColumn[] pk_keys = new DataColumn[primary_keys_fields.Count];
+			for (int i = 0; i < pk_keys.Length; i++)
+			{
+				pk_keys[i] = dataTable.Columns[primary_keys_fields[i]];
+			}
+			dataTable.PrimaryKey = pk_keys;
+
 
 			ds.Tables.Add(dataTable);
 
 			for (int i = 0; i < foreign_key_names.Count; i++)
 			{
-				string[] arr_relation = foreign_key_names[i].Split('_');
+				string[] arr_relation = foreign_key_names[i].Split('_'); // fk_Groups_Directions
 
-				if(!ds.Tables.Contains(arr_relation[arr_relation.Length-1]))
+				if (!ds.Tables.Contains(arr_relation[arr_relation.Length - 1]))
 				{
 					Generic_Table(arr_relation[arr_relation.Length - 1]);
 				}
@@ -81,9 +111,18 @@ namespace DataSet
 
 			string query = $"SELECT * FROM {table_name}";
 			SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+
 			adapter.Fill(ds.Tables[table_name]);
 
+			foreach (DataRow row in dataTable.Rows)
+			{
+				for (int i = 0; i < row.Table.Columns.Count; i++)
+				{
+					Console.Write($"{row[i].ToString()}\t\t");
+				}
+				Console.WriteLine();
 
+			}
 
 			return dataTable;
 		}
@@ -97,29 +136,58 @@ namespace DataSet
 			SqlDataReader reader = cmd.ExecuteReader();
 
 			for (int i = 0; i < reader.FieldCount; i++)
+			{
 				columns.Add(reader.GetName(i));
-
+			}
 			conn.Close();
-
 			return columns;
+		}
+
+		public List<string> Get_Column_Types(string table_name)
+		{
+			string query = $"SELECT * FROM {table_name}";
+			List<string> types = new List<string>();
+			SqlCommand cmd = new SqlCommand(query, conn);
+			conn.Open();
+			SqlDataReader reader = cmd.ExecuteReader();
+
+			for (int i = 0; i < reader.FieldCount; i++)
+			{
+				types.Add(reader.GetFieldType(i).ToString());
+			}
+			conn.Close();
+			return types;
+		}
+
+		public List<string> Get_Names_Primary_Keys(string table_name)
+		{
+			conn.Open();
+			List<string> primary_keys = new List<string>();
+			DataTable relationsSchema = conn.GetSchema("IndexColumns", new string[] { null, null, table_name });
+			foreach (DataRow row in relationsSchema.Rows)
+			{
+				primary_keys.Add((string)row["COLUMN_NAME"]);
+			}
+			conn.Close();
+			return primary_keys;
 		}
 
 		public string Get_Name_Primary_Key(string table_name)
 		{
 			conn.Open();
-			string columnName = "";
+			string primary_key = "";
 			DataTable relationsSchema = conn.GetSchema("IndexColumns", new string[] { null, null, table_name });
 			foreach (DataRow row in relationsSchema.Rows)
 			{
-				columnName = (string)row["COLUMN_NAME"];
+				primary_key = (string)row["COLUMN_NAME"];
 			}
 			conn.Close();
-			return columnName;
+			return primary_key;
 		}
 
 		public List<string> Get_Names_Foreign_Keys(string table_name)
 		{
-				conn.Open();
+			conn.Open();
 			DataTable relationsSchema = conn.GetSchema("ForeignKeys", new string[] { null, null, table_name });
 			List<string> foreign_keys = new List<string>();
 			foreach (DataRow row in relationsSchema.Rows)
@@ -127,7 +195,7 @@ namespace DataSet
 				string columnName = (string)row["CONSTRAINT_NAME"];
 				foreign_keys.Add(columnName);
 			}
-				conn.Close();
+			conn.Close();
 			return foreign_keys;
 		}
 
@@ -143,7 +211,7 @@ namespace DataSet
 				"WHERE \r\n             " +
 				$"kcu.TABLE_NAME = '{table_name}' \r\n             AND kcu.CONSTRAINT_NAME = '{name_foreign_key}'  ";
 
-			
+
 			SqlCommand cmd = new SqlCommand(query, conn);
 			conn.Open();
 			SqlDataReader reader = cmd.ExecuteReader();
@@ -153,7 +221,7 @@ namespace DataSet
 				result = reader[0].ToString();
 			}
 
-			conn.Close() ;
+			conn.Close();
 			return result;
 		}
 
@@ -168,23 +236,11 @@ namespace DataSet
 				}
 				Console.WriteLine();
 			}
-
-
-
 			foreach (DataRow row in ds.Tables["Directions"].Rows)
 			{
 				Console.WriteLine($"{row["direction_id"]}\t{row["direction_name"]}");
 			}
-
-
-
 		}
-
-
-
-
-
-
 
 	}
 }

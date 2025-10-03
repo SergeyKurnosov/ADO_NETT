@@ -39,29 +39,29 @@ namespace DataSet
 			}
 
 
-			Console.WriteLine("\nall columns:");
-			for (int i = 0; i < columns_names.Count; i++)
-			{
-				Console.WriteLine(columns_names[i]);
-			}
-			Console.WriteLine("\npk:");
-			for (int i = 0; i < primary_keys_fields.Count; i++)
-				Console.WriteLine(primary_keys_fields[i]);
+			//Console.WriteLine("\nall columns:");
+			//for (int i = 0; i < columns_names.Count; i++)
+			//{
+			//	Console.WriteLine(columns_names[i]);
+			//}
+			//Console.WriteLine("\npk:");
+			//for (int i = 0; i < primary_keys_fields.Count; i++)
+			//	Console.WriteLine(primary_keys_fields[i]);
 
-			for (int i = 0; i < foreign_key_names.Count; i++)
-			{
-				Console.WriteLine("\nname fk:");
-				Console.WriteLine(foreign_key_names[i]);
-				Console.WriteLine("\nfield fk:");
-				Console.WriteLine(Get_Name_Field_Foreign_Keys(table_name, foreign_key_names[i]));
-			}
+			//for (int i = 0; i < foreign_key_names.Count; i++)
+			//{
+			//	Console.WriteLine("\nname fk:");
+			//	Console.WriteLine(foreign_key_names[i]);
+			//	Console.WriteLine("\nfield fk:");
+			//	Console.WriteLine(Get_Name_Field_Foreign_Keys(table_name, foreign_key_names[i]));
+			//}
 
 
 
 			////////////////////////////////////////////////////////
 			///
-			for (int i = 0; i < types_fields.Count; i++)
-				Console.WriteLine(types_fields[i]);
+			//for (int i = 0; i < types_fields.Count; i++)
+			//	Console.WriteLine(types_fields[i]);
 
 			for (int i = 0; i < columns_names.Count; i++)
 			{
@@ -114,15 +114,15 @@ namespace DataSet
 
 			adapter.Fill(ds.Tables[table_name]);
 
-			foreach (DataRow row in dataTable.Rows)
-			{
-				for (int i = 0; i < row.Table.Columns.Count; i++)
-				{
-					Console.Write($"{row[i].ToString()}\t\t");
-				}
-				Console.WriteLine();
+			//foreach (DataRow row in dataTable.Rows)
+			//{
+			//	for (int i = 0; i < row.Table.Columns.Count; i++)
+			//	{
+			//		Console.Write($"{row[i].ToString()}\t\t");
+			//	}
+			//	Console.WriteLine();
 
-			}
+			//}
 
 			return dataTable;
 		}

@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.IO;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Data.SqlClient;
-using System.Configuration;
 
 namespace DataSet
 {
@@ -17,11 +20,9 @@ namespace DataSet
 	{
 		string connectionString = "";
 		SqlConnection connection = null;
-		Dictionary<string, int> d_groupsDirection;
-		Dictionary<string, int> d_disciplineDirection;
-		Dictionary<string, int> d_StudentsDirection;
 		DTS dts;
-		//	System.Data.DataSet GroupsRelatedData = null;
+		TabControl tabControl = new TabControl();
+
 		public MainForm()
 		{
 			InitializeComponent();
@@ -31,19 +32,28 @@ namespace DataSet
 			AllocConsole();
 
 			dts = new DTS(connectionString, connection);
-			//		dts.Generic_Table("Directions");
-			//		dts.Generic_Table("Disciplines");
-			//	dts.Generic_Table("Groups"); 
 			dts.Generic_Table("Students");
+			dts.Generic_Table("Teachers");
 			dts.Generic_Table("DisciplinesDirectionsRelation");
 
 
-			TabControl tabControl = new TabControl();
+			
 			tabControl.Dock = DockStyle.Fill;
 			this.Controls.Add(tabControl);
 
-			d_groupsDirection = LoadDataToCombobox(dts.ds.Tables["Directions"]);
-			d_disciplineDirection = LoadDataToCombobox(dts.ds.Tables["Directions"]);
+			string path = "D:\\ProjectHW\\ADO_NETT\\IMAGES\\garfild.jpeg";
+			byte[] bytes = File.ReadAllBytes(path);
+
+			DataRow row = dts.ds.Tables["Students"].NewRow();
+			row["stud_id"] = "99";
+			row["photo"] = bytes;
+
+		//	Console.WriteLine(dts.ds.Tables["Students"].Columns["photo"].DataType);
+			dts.ds.Tables["Students"].Rows.Add(row);
+
+
+
+		//	dts.ds.Tables["Students"]
 
 
 			TabPage tabPage = new TabPage();
@@ -58,41 +68,157 @@ namespace DataSet
 				dataGridView.Height = 350;
 				dataGridView.Anchor = AnchorStyles.Left | AnchorStyles.Top;
 				dataGridView.DataSource = dts.ds.Tables[i];
+				dataGridView.CellDoubleClick += DataGridViewAll_CellDoubleClick;
+
 				tabPage.Controls.Add(dataGridView);
 
-
-				if (dts.ds.Tables[i].TableName == "Groups")
+				if (dataGridView.Name == "Students")
 				{
-					ComboBox comboBox = new ComboBox();
-					comboBox.Name = "Groups";
-					comboBox.Location = new Point(10, 10);
-					comboBox.Size = new Size(150, 25);
-					comboBox.Items.AddRange(d_groupsDirection.Keys.ToArray());
-					comboBox.SelectedIndex = 0;
-					comboBox.SelectedIndexChanged += DIRECTIONS_SelectedIndexChanged;
-					tabPage.Controls.Add(comboBox);
+					int TopLeft = 10;
+					ComboBox studentsGroups = Get_New_ComboBox(dts.ds.Tables["Groups"], TopLeft);
+					studentsGroups.SelectionChangeCommitted +=
+						(sender, e) =>
+					{
+						if (studentsGroups.SelectedValue.ToString() == "0")
+							dataGridView.DataSource = dts.ds.Tables["Students"];
+						else
+							dataGridView.DataSource = dts.ds.Tables["Students"].Select($"group='{studentsGroups.SelectedValue}'").CopyToDataTable();
+					};
+					studentsGroups.SelectedIndexChanged +=
+						(sender, e) =>
+						{
+							if (studentsGroups.Items.Count == 1)
+								dataGridView.DataSource = dts.ds.Tables["Students"].Select($"group='{studentsGroups.SelectedValue}'").CopyToDataTable();
+						};
+
+					tabPage.Controls.Add(studentsGroups);
+					TopLeft += 200;
+					ComboBox studentsDirections = Get_New_ComboBox(dts.ds.Tables["Directions"], TopLeft);
+					studentsDirections.SelectedIndexChanged +=
+						(sender, e) =>
+						{
+							try
+							{
+								studentsGroups.Enabled = true;
+								if (studentsDirections.SelectedValue.ToString() == "0")
+									studentsGroups.DataSource = dts.ds.Tables["Groups"];
+								else
+									studentsGroups.DataSource = dts.ds.Tables["Groups"].Select($"direction='{studentsDirections.SelectedValue}'").CopyToDataTable();
+							}
+							catch (Exception ex)
+							{
+								studentsGroups.Enabled = false;
+							}
+
+						};
+					tabPage.Controls.Add(studentsDirections);
 				}
 
-				if (dts.ds.Tables[i].TableName == "Discipline")
+				if (dataGridView.Name == "Disciplines")
 				{
-					ComboBox comboBox = new ComboBox();
-					comboBox.Name = "Discipline";
-					comboBox.Location = new Point(10, 10);
-					comboBox.Size = new Size(150, 25);
-					comboBox.Items.AddRange(d_disciplineDirection.Keys.ToArray());
-					comboBox.SelectedIndex = 0;
-					comboBox.SelectedIndexChanged += DIRECTIONS_SelectedIndexChanged;
-					tabPage.Controls.Add(comboBox);
+					ComboBox disciplinesDirections = Get_New_ComboBox(dts.ds.Tables["Directions"]);
+					disciplinesDirections.SelectedIndexChanged +=
+						(sender, e) =>
+						{
+							if (disciplinesDirections.SelectedValue.ToString() == "0")
+								dataGridView.DataSource = dts.ds.Tables["Disciplines"];
+							else
+							{
+								DataRow[] rows = dts.ds.Tables["DisciplinesDirectionsRelation"].Select($"direction='{disciplinesDirections.SelectedValue.ToString()}'");
+								if (rows.Length > 0)
+								{
+									DataTable ddr = rows.CopyToDataTable();
+
+
+
+									DataTable disciplines = dts.ds.Tables["Disciplines"];
+
+									var query = from discipline in disciplines.AsEnumerable()
+												join dd in ddr.AsEnumerable()
+												on discipline["discipline_id"] equals dd["discipline"]
+												select discipline;
+
+									dataGridView.DataSource = query.CopyToDataTable();
+								}
+								else
+								{
+									MessageBox.Show("Not found", "Warning", MessageBoxButtons.OK);
+								}
+
+							}
+
+						};
+					tabPage.Controls.Add(disciplinesDirections);
 				}
+
 
 
 				tabControl.TabPages.Add(tabPage);
 			}
-
-
-
-
 		}
+
+		ComboBox Get_New_ComboBox(DataTable table_orign, int TopLeft = 10)
+		{
+			DataTable table = table_orign.Copy();
+			DataRow allRow = table.NewRow();
+			allRow[0] = 0;
+			allRow[1] = "Все";
+			table.Rows.InsertAt(allRow, 0);
+			ComboBox cb = new ComboBox();
+			cb.Name = table.TableName;
+			cb.Left = TopLeft;
+			cb.DataSource = table;
+			cb.DisplayMember = table.Columns[1].ToString();
+			cb.ValueMember = table.Columns[0].ToString();
+			return cb;
+		}
+
+
+		private void DataGridViewAll_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex >= 0)
+			{
+				DataGridViewRow row = (sender as DataGridView).Rows[e.RowIndex];
+				
+				var id = row.Cells[0].Value;
+
+				PictureBox pictureBox = new PictureBox();
+
+				pictureBox.Width = 200;
+				pictureBox.Height = 200; 
+
+				pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+			//	pictureBox.Location = new Point(10, 10);
+
+
+				DataRow dataRow = dts.ds.Tables[tabControl.SelectedTab.Text].Select($"stud_id='{Convert.ToInt32(id)}'").First();
+
+				byte[] imageBytes = (byte[])dataRow["photo"];
+
+				using (MemoryStream ms = new MemoryStream(imageBytes))
+				{
+					ms.Position = 0;
+					pictureBox.Image = Image.FromStream(ms);
+
+				}
+				Form form = new Form();
+				form.Height = pictureBox.Height;
+				form.Width = pictureBox.Width;	
+				form.Controls.Add(pictureBox);
+				form.ShowDialog();
+			//	this.Controls.Add(pictureBox);
+			//	tabControl.Controls.Add(pictureBox);
+			//	tabControl.SelectedTab.Controls.Add(pictureBox);
+
+			//	pictureBox.Show();
+
+
+			//	DinamicForm dinamicForm = new DinamicForm(tabControl.SelectedTab.Text, connection, false, Convert.ToInt32(id));
+			//	dinamicForm.ShowForm();
+			}
+		}
+
+
 
 
 
@@ -104,86 +230,5 @@ namespace DataSet
 
 
 
-		Dictionary<string, int> LoadDataToCombobox(DataTable dataTable)
-		{
-			Dictionary<string, int> dictionary = new Dictionary<string, int>();
-			dictionary.Add("Все", 0);
-
-			for (int i = 0; i < dataTable.Rows.Count; i++)
-			{
-				DataRow row = dataTable.Rows[i];
-				dictionary.Add(row[1].ToString(), Convert.ToInt32(row[0]));
-			}
-			return dictionary;
-		}
-
-		private void DIRECTIONS_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ComboBox cmb = sender as ComboBox;
-			DataTable dataTable = new DataTable();
-			DataGridView dataGridView = this.Controls.Find("Groups", true)
-				   .FirstOrDefault() as DataGridView;
-
-			if (cmb.SelectedItem.ToString() == "Все")
-			{
-				dataTable = dts.ds.Tables["Groups"];
-				dataGridView.DataSource = dataTable;
-			}
-				
-			if (cmb.SelectedItem.ToString() != "Все")
-			{
-				DataRow[] dataRows;
-				dataRows = dts.ds.Tables["Groups"].Select($"direction = {d_groupsDirection[cmb.SelectedItem.ToString()]}");
-				dataTable = dts.ds.Tables["Groups"].Clone();
-
-				foreach (DataRow row in dataRows)
-				{
-					dataTable.ImportRow(row);
-				}
-				dataGridView.DataSource = dataTable;
-			}
-		}
-
-		private void DISCIPLINES_DIRECTIONS_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ComboBox cmb = sender as ComboBox;
-			DataTable dataTable = new DataTable();
-			DataGridView dataGridView = this.Controls.Find("Disciplines", true)
-				   .FirstOrDefault() as DataGridView;
-
-			if (cmb.SelectedItem.ToString() == "Все")
-			{
-				dataTable = dts.ds.Tables["Disciplines"];
-				dataGridView.DataSource = dataTable;
-			}
-
-			if (cmb.SelectedItem.ToString() != "Все")
-			{
-				DataRow[] dataRows;
-
-				dataRows = dts.ds.Tables["DisciplinesDirectionsRelation"].Select($"direction = {d_groupsDirection[cmb.SelectedItem.ToString()]}");
-				dataTable = dts.ds.Tables["DisciplinesDirectionsRelation"].Clone();
-				foreach (DataRow row in dataRows)
-				{
-					dataTable.ImportRow(row);
-				}
-
-				DataRow[] dataRows1 = new DataRow[dataTable.Rows.Count]; // = dts.ds.Tables["Disciplines"].Select($"discipline_id = {d_groupsDirection[cmb.SelectedItem.ToString()]}");
-
-				for (int i = 0; i < dataTable.Rows.Count; i++) 
-				{
-					dataRows1[i];
-				}
-
-				foreach (DataRow row in dataTable.Rows)
-				{
-					dataRows1
-				}
-
-
-
-				dataGridView.DataSource = dataTable;
-			}
-		}
 	}
 }

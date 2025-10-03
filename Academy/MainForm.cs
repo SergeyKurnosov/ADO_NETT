@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
+using System.Configuration;
+
+
 
 namespace Academy
 {
@@ -16,6 +19,7 @@ namespace Academy
 	{
 
 		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+	
 		SqlConnection connection;
 		Dictionary<string, int> d_groupsDirection;
 
@@ -50,6 +54,8 @@ namespace Academy
 		{
 			InitializeComponent();
 			AllocConsole();
+			connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
+			Console.WriteLine(connecctionString);
 			connection = new SqlConnection(connecctionString);
 
 			//	LoadDirections();
@@ -115,6 +121,15 @@ namespace Academy
 			return table;
 		}
 
+		void Insert(string table, string fields, string values)
+		{
+			string cmd = $"INSERT {table}({fields}) VALUES ({values})";
+			SqlCommand command = new SqlCommand(cmd, connection);
+			connection.Open();
+			command.ExecuteNonQuery();
+			connection.Close();
+		}
+
 		void ConvertLearningDays()
 		{
 			for (int i = 0; i < dataGridViewGroups.RowCount; i++)
@@ -167,7 +182,25 @@ namespace Academy
 			toolStripStatusLabel.Text = $"{statusBarMessages[tabControl.SelectedIndex]}: {(sender as DataGridView).RowCount - 1}";
 		}
 
+		private void buttonAdd_Click(object sender, EventArgs e)
+		{
+			StudentForm student = new StudentForm();
+			DialogResult result = student.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				
+				//todo:делаем insert в базу:
+				Insert
+					(
+					"Students", 
+					"last_name,first_name,middle_name,birth_date,email,phone,[group]", 
+					student.Student.ToString()
+					);
 
+			}
+
+
+		}
 	}
 
 }

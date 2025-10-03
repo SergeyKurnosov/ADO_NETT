@@ -228,20 +228,39 @@ namespace DataSet
 
 		private void comboBoxDisciplinesForDirection_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			//1 получаем набор значений из связующей таблицы
-			DataRow[] ddr = DisciplinesDirectionsRelation.Tables["DisciplinesDirectionsRelation"]
-				.Select($"direction={comboBoxDisciplinesForDirection.SelectedValue}");
+			////1 получаем набор значений из связующей таблицы
+			//DataRow[] ddr = DisciplinesDirectionsRelation.Tables["DisciplinesDirectionsRelation"]
+			//	.Select($"direction={comboBoxDisciplinesForDirection.SelectedValue}");
 
-			//2 клонируем таблицу с дисциплинами
-			DataTable dtDisciplinesForDirection = DisciplinesDirectionsRelation.Tables["Disciplines"].Clone();
-			foreach (DataRow row in ddr)
-			{
-				DataRow discipline = DisciplinesDirectionsRelation.Tables["Disciplines"].Rows.Find(row["discipline"]);
-				dtDisciplinesForDirection.ImportRow(discipline);
-			}
+			////2 клонируем таблицу с дисциплинами
+			//DataTable dtDisciplinesForDirection = DisciplinesDirectionsRelation.Tables["Disciplines"].Clone();
+			//foreach (DataRow row in ddr)
+			//{
+			//	DataRow discipline = DisciplinesDirectionsRelation.Tables["Disciplines"].Rows.Find(row["discipline"]);
+			//	dtDisciplinesForDirection.ImportRow(discipline);
+			//}
 
-			//4 отоброжаем выбранные дисциплины
-			dataGridViewDiscipline.DataSource = dtDisciplinesForDirection;
+			////4 отоброжаем выбранные дисциплины
+			//dataGridViewDiscipline.DataSource = dtDisciplinesForDirection;
+
+			///////////////////////////////////////////
+
+			//DataRow[] ddr = DisciplinesDirectionsRelation.Tables["DisciplinesDirectionsRelation"]
+			//	.Select($"direction={comboBoxDisciplinesForDirection.SelectedValue}");
+			//DataTable dtDisciplines = DisciplinesDirectionsRelation.Tables["Disciplines"].Clone();
+
+			//object[] disciplines_ids = ddr.Select(row => row["discipline"]).Distinct().ToArray();
+			//string filter = $"discipline_id IN ({String.Join(",", disciplines_ids)})";
+			//dataGridViewDiscipline.DataSource =
+			//	DisciplinesDirectionsRelation.Tables["Disciplines"].Select(filter).CopyToDataTable();
+			///////////////////////////////////////////
+
+		//	var disciplines = from discipline in DisciplinesDirectionsRelation.Tables["Disciplines"]
+		//					  select ("");
+		//	Console.WriteLine(disciplines.GetType());
+
+
+
 
 
 		}

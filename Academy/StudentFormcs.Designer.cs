@@ -46,6 +46,7 @@
 			this.buttonBroseNamePhoto = new System.Windows.Forms.Button();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
+			this.labelID = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxPhoto)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -168,7 +169,7 @@
 			// 
 			this.pictureBoxPhoto.Location = new System.Drawing.Point(402, 13);
 			this.pictureBoxPhoto.Name = "pictureBoxPhoto";
-			this.pictureBoxPhoto.Size = new System.Drawing.Size(218, 223);
+			this.pictureBoxPhoto.Size = new System.Drawing.Size(218, 266);
 			this.pictureBoxPhoto.TabIndex = 14;
 			this.pictureBoxPhoto.TabStop = false;
 			// 
@@ -201,11 +202,23 @@
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.UseVisualStyleBackColor = true;
 			// 
+			// labelID
+			// 
+			this.labelID.AutoSize = true;
+			this.labelID.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.labelID.Location = new System.Drawing.Point(12, 307);
+			this.labelID.Name = "labelID";
+			this.labelID.Size = new System.Drawing.Size(27, 24);
+			this.labelID.TabIndex = 18;
+			this.labelID.Text = "ID";
+			this.labelID.Visible = false;
+			// 
 			// StudentForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(652, 361);
+			this.Controls.Add(this.labelID);
 			this.Controls.Add(this.buttonCancel);
 			this.Controls.Add(this.buttonOK);
 			this.Controls.Add(this.buttonBroseNamePhoto);
@@ -253,5 +266,6 @@
 		private System.Windows.Forms.Button buttonBroseNamePhoto;
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.Label labelID;
 	}
 }

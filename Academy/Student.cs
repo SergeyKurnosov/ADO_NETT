@@ -30,7 +30,7 @@ namespace Academy
 
 		public override string ToString()
 		{
-			return $"N'{Last_name}',N'{First_name}',N'{Middle_name}',N'{Email}',N'{Phone}',N'{Group}'";
+			return $"N'{Last_name}',N'{First_name}',N'{Middle_name}','{BirthDate}',N'{Email}',N'{Phone}',{Group}";
 		}
 	}
 }

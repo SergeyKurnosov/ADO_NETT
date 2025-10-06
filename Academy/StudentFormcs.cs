@@ -22,7 +22,47 @@ namespace Academy
 			comboBoxGroup.DataSource = groups;
 			comboBoxGroup.DisplayMember = groups.Columns[1].ToString();
 			comboBoxGroup.ValueMember = groups.Columns[0].ToString();
-			
+			InitForm();
+		}
+
+		public StudentForm(DataRow row) : this()
+		{
+			//string[] fullName = row[1].ToString().Split(' ');
+			//textBoxLastName.Text = fullName[0];
+			//textBoxFirstName.Text = fullName[1];
+			//textBoxMiddleName.Text = fullName[2];
+
+			//dateTimePickerBirtDate.Text = row[2].ToString();
+			//textBoxEmail.Text = row[3].ToString();
+			//textBoxPhone.Text = row[6].ToString();
+			//comboBoxGroup.SelectedValue = row[7];
+
+			int stud_id = Convert.ToInt32(row[0]);
+			DataTable student = connector.Select("*", "Students", $"stud_id={stud_id}");
+
+			textBoxLastName.Text = student.Rows[0][1].ToString();
+			textBoxFirstName.Text = student.Rows[0][2].ToString();
+			textBoxMiddleName.Text = student.Rows[0][3].ToString();
+
+			dateTimePickerBirtDate.Value = Convert.ToDateTime(student.Rows[0][4]);
+			textBoxEmail.Text = student.Rows[0][5].ToString();
+			textBoxPhone.Text = student.Rows[0][6].ToString();
+			comboBoxGroup.SelectedValue = student.Rows[0][8];
+
+			labelID.Visible = true;
+			labelID.Text = $"ID: {student.Rows[0][0].ToString()}";
+
+		}
+
+		void InitForm()
+		{
+			textBoxLastName.Text = "Леоньтева";
+			textBoxFirstName.Text = "Шарлота";
+			textBoxMiddleName.Text = "Владимировна";
+			dateTimePickerBirtDate.Value = new DateTime(2007, 07, 08);
+			textBoxEmail.Text = "sharlott@mail.com";
+			textBoxPhone.Text = "+7(123)456-77-88";
+			comboBoxGroup.SelectedIndex = 10;
 		}
 
 		void Compress()
@@ -46,7 +86,6 @@ namespace Academy
 					textBoxEmail.Text,
 					textBoxPhone.Text,
 					Convert.ToInt32( comboBoxGroup.SelectedValue)
-
 				);
 		}
 	}

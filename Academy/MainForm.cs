@@ -19,7 +19,7 @@ namespace Academy
 	{
 
 		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-	
+
 		SqlConnection connection;
 		Dictionary<string, int> d_groupsDirection;
 
@@ -85,6 +85,8 @@ namespace Academy
 			dataGridView.DataSource = Select(queries[i].Fields, queries[i].Tables, queries[i].Condition);
 			//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
 			if (i == 1) ConvertLearningDays();
+			dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			dataGridView.ReadOnly = true;
 		}
 
 		void FillStatusBar(int i)
@@ -135,7 +137,7 @@ namespace Academy
 			for (int i = 0; i < dataGridViewGroups.RowCount; i++)
 			{
 
-				dataGridViewGroups.Rows[i].Cells["learning_days"].Value=
+				dataGridViewGroups.Rows[i].Cells["learning_days"].Value =
 				 new Week(Convert.ToByte(dataGridViewGroups.Rows[i].Cells["learning_days"].Value));
 			}
 		}
@@ -188,16 +190,30 @@ namespace Academy
 			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-				
+
 				//todo:делаем insert в базу:
 				Insert
 					(
-					"Students", 
-					"last_name,first_name,middle_name,birth_date,email,phone,[group]", 
+					"Students",
+					"last_name,first_name,middle_name,birth_date,email,phone,[group]",
 					student.Student.ToString()
 					);
 
 			}
+
+
+		}
+
+		private void dataGridViewStudents_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			int i = dataGridViewStudents.SelectedRows[0].Index;
+			//	Console.WriteLine(row.Index);
+			//	Console.WriteLine((dataGridViewStudents.DataSource as DataTable).Rows[i][1]);
+			DataRow row = (dataGridViewStudents.DataSource as DataTable).Rows[i];
+			StudentForm form = new StudentForm(row);
+			DialogResult result = form.ShowDialog();
+
+
 
 
 		}

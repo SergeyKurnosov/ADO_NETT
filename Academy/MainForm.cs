@@ -21,6 +21,7 @@ namespace Academy
 		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
 		SqlConnection connection;
+		Connector connector;
 		Dictionary<string, int> d_groupsDirection;
 
 		Query[] queries = new Query[]
@@ -57,6 +58,7 @@ namespace Academy
 			connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
 			Console.WriteLine(connecctionString);
 			connection = new SqlConnection(connecctionString);
+			connector = new Connector();
 
 			//	LoadDirections();
 			//	LoadGroups();
@@ -192,7 +194,7 @@ namespace Academy
 			{
 
 				//todo:делаем insert в базу:
-				Insert
+				connector.Insert
 					(
 					"Students",
 					"last_name,first_name,middle_name,birth_date,email,phone,[group]",
@@ -206,13 +208,25 @@ namespace Academy
 
 		private void dataGridViewStudents_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			int i = dataGridViewStudents.SelectedRows[0].Index;
-			//	Console.WriteLine(row.Index);
-			//	Console.WriteLine((dataGridViewStudents.DataSource as DataTable).Rows[i][1]);
-			DataRow row = (dataGridViewStudents.DataSource as DataTable).Rows[i];
-			StudentForm form = new StudentForm(row);
+			int i = Convert.ToInt32(dataGridViewStudents.SelectedRows[0].Cells[0].Value);
+			StudentForm form = new StudentForm(i);
 			DialogResult result = form.ShowDialog();
-
+			if (result == DialogResult.OK)
+			{
+				connector.Update
+					(
+					"Students",
+					$@"
+last_name=N'{form.Student.Last_name}',
+first_name=N'{form.Student.First_name}',
+middle_name=N'{form.Student.Middle_name}',
+birth_date='{form.Student.BirthDate}',
+email=N'{form.Student.Email}',
+phone=N'{form.Student.Phone}',
+[group]={form.Student.Group}",
+					$"stud_id={i}"
+					);
+			}
 
 
 

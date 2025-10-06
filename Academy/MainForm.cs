@@ -216,16 +216,12 @@ namespace Academy
 				connector.Update
 					(
 					"Students",
-					$@"
-last_name=N'{form.Student.Last_name}',
-first_name=N'{form.Student.First_name}',
-middle_name=N'{form.Student.Middle_name}',
-birth_date='{form.Student.BirthDate}',
-email=N'{form.Student.Email}',
-phone=N'{form.Student.Phone}',
-[group]={form.Student.Group}",
+					form.Student.ToStringUpdate(),
 					$"stud_id={i}"
 					);
+
+
+				
 			}
 
 

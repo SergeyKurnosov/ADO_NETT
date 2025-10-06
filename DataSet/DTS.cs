@@ -12,7 +12,6 @@ namespace DataSet
 	internal class DTS
 	{
 		public readonly string connectionString;
-		//	public readonly string tableName;
 		SqlConnection conn;
 		public System.Data.DataSet ds;
 
@@ -39,37 +38,8 @@ namespace DataSet
 			}
 
 
-			//Console.WriteLine("\nall columns:");
-			//for (int i = 0; i < columns_names.Count; i++)
-			//{
-			//	Console.WriteLine(columns_names[i]);
-			//}
-			//Console.WriteLine("\npk:");
-			//for (int i = 0; i < primary_keys_fields.Count; i++)
-			//	Console.WriteLine(primary_keys_fields[i]);
-
-			//for (int i = 0; i < foreign_key_names.Count; i++)
-			//{
-			//	Console.WriteLine("\nname fk:");
-			//	Console.WriteLine(foreign_key_names[i]);
-			//	Console.WriteLine("\nfield fk:");
-			//	Console.WriteLine(Get_Name_Field_Foreign_Keys(table_name, foreign_key_names[i]));
-			//}
-
-
-
-			////////////////////////////////////////////////////////
-			///
-			//for (int i = 0; i < types_fields.Count; i++)
-			//	Console.WriteLine(types_fields[i]);
-
 			for (int i = 0; i < columns_names.Count; i++)
 			{
-				//if (types_fields[i].Contains("Byte[]"))
-				//{
-				//	DataColumn byteColumn = new DataColumn(columns_names[i], typeof(byte[]));
-				//	dataTable.Columns.Add(byteColumn);
-				//}
 				if (types_fields[i].Contains("Byte[]"))
 				{
 					DataColumn byteColumn = new DataColumn(columns_names[i], typeof(byte[]));
@@ -95,7 +65,7 @@ namespace DataSet
 
 			for (int i = 0; i < foreign_key_names.Count; i++)
 			{
-				string[] arr_relation = foreign_key_names[i].Split('_'); // fk_Groups_Directions
+				string[] arr_relation = foreign_key_names[i].Split('_'); 
 
 				if (!ds.Tables.Contains(arr_relation[arr_relation.Length - 1]))
 				{
@@ -113,16 +83,6 @@ namespace DataSet
 			SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
 
 			adapter.Fill(ds.Tables[table_name]);
-
-			//foreach (DataRow row in dataTable.Rows)
-			//{
-			//	for (int i = 0; i < row.Table.Columns.Count; i++)
-			//	{
-			//		Console.Write($"{row[i].ToString()}\t\t");
-			//	}
-			//	Console.WriteLine();
-
-			//}
 
 			return dataTable;
 		}

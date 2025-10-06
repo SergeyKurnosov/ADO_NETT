@@ -1,10 +1,15 @@
-﻿using System;
+﻿using DataSet;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Academy
 {
@@ -14,7 +19,7 @@ namespace Academy
 		public string table_name { get; set; }                                  //имя таблицы с которой мы работаем
 		public List<string> columns_names { get; set; } = new List<string>();   //имена ВСЕХ колонок в таблице
 		public List<string> columns_types { get; set; } = new List<string>();   //типы ВСЕХ колонок в таблице
-		public List<string> values { get; set; } = new List<string>();          //ВСЕ значения полученные из формы (нулевые и ненулевые)
+		public List<object> values { get; set; } = new List<object>();          //ВСЕ значения полученные из формы (нулевые и ненулевые)
 		public string not_null_fields_for_insert { get; set; }                  //поля с ненулевыми значениями для заполнения
 		public string not_null_values_for_insert { get; set; }                  //ненулевые значениями для заполнения
 		public List<string> column_names_NOT_NULL { get; set; }                 //поля не нулевые (ОБЯЗАТЕЛЬНЫЕ ДЛЯ ЗАПОЛНЕНИЯ)
@@ -24,6 +29,7 @@ namespace Academy
 		SqlConnection connection { get; set; }
 		public Form myForm;
 		public Button button;
+		public PictureBox pictureBox;
 
 		public DinamicForm(string table_name, SqlConnection connection, bool for_insert = true, int id_for_update = 0)
 		{
@@ -42,7 +48,7 @@ namespace Academy
 
 			myForm = new Form();
 			myForm.Text = for_insert ? "Введите данные" : "Измените данные";
-			myForm.Width = 400;
+			myForm.Width = 500;
 			myForm.Height = 300;
 
 			button = new Button();
@@ -52,6 +58,15 @@ namespace Academy
 			button.Width = 100;
 			button.Height = 20;
 
+			pictureBox = new PictureBox();
+			pictureBox.Width = 200;
+			pictureBox.Height = 200;
+			pictureBox.BorderStyle = BorderStyle.Fixed3D;
+			pictureBox.BackColor = SystemColors.ControlLightLight;
+			pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+			pictureBox.Location = new Point(250, 50);
+
 			button.Click += (sender, e) =>
 			{
 				not_null_fields_for_insert = String.Empty;
@@ -59,9 +74,9 @@ namespace Academy
 				preparation_str_for_query(for_insert);
 				if (ready_to_Insert())
 				{
-					if (!for_insert)
+					if (!for_insert && !String.IsNullOrEmpty(not_null_values_for_insert))
 						Update(not_null_fields_for_insert, not_null_values_for_insert, id_for_update);
-					else
+					else if(for_insert)
 						Insert(table_name, not_null_fields_for_insert, not_null_values_for_insert);
 
 
@@ -84,7 +99,7 @@ namespace Academy
 			{
 				for (int j = 0; j < column_names_NOT_NULL.Count; j++)
 				{
-					if (columns_names[i].Equals(column_names_NOT_NULL[j]) && String.IsNullOrEmpty(values[i]))
+					if (columns_names[i].Equals(column_names_NOT_NULL[j]) && String.IsNullOrEmpty((string)values[i]))
 						return false;
 				}
 			}
@@ -194,30 +209,69 @@ namespace Academy
 
 				if (columns_types[i].Contains("Int") || columns_types[i].Contains("Byte") || columns_types[i].Contains("Decimal"))
 				{
-					TextBox inputDigit = new TextBox();
-					inputDigit.Left = 110;
-					inputDigit.Top = top_space;
-					inputDigit.Width = 100;
-					inputDigit.KeyPress += NumericTextBox_KeyPress;
-					if (!for_insert)
-						inputDigit.Text = values_for_update[i].ToString();
-					if (columns_names[i].Contains("_id"))
+
+					if (columns_types[i].Contains("Byte[]") && !for_insert)
 					{
-						inputDigit.Text = for_insert ? Convert.ToString(ReturnNewId(columns_names[i], connection)) : inputDigit.Text = values_for_update[i].ToString();
-						inputDigit.Enabled = false;
-						if (for_insert)
-							AddValueToValues(i, inputDigit.Text);
+						pictureBox.Image = Image.FromStream(new MemoryStream((byte[])values_for_update[i]));
+						myForm.Controls.Add(pictureBox);
+						Button buttonLoadImage = new Button();
+						buttonLoadImage.Text = "Загрузить";
+						buttonLoadImage.Left = 110;
+						buttonLoadImage.Top = top_space;
+						buttonLoadImage.Width = 50;
+						buttonLoadImage.Click +=
+							(sender, e) =>
+							{
+								OpenFileDialog openFileDialog = new OpenFileDialog();
+								{
+									openFileDialog.Title = "Выберите изображение";
+									openFileDialog.Filter = "Изображения (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp";
+
+									if (openFileDialog.ShowDialog() == DialogResult.OK)
+									{
+										pictureBox.Image = Image.FromFile(openFileDialog.FileName);
+										myForm.AutoSize = true;
+										byte[] imageBytes = File.ReadAllBytes(openFileDialog.FileName);
+										UpdatePhoto(imageBytes, Convert.ToInt32(values_for_update[0]));
+									}
+								}
+							};
+						buttonLoadImage.Name = $"Control {i}";
+
+
+						AddLabel(i, top_space);
+						myForm.Controls.Add(buttonLoadImage);
+						top_space += 30;
+					}
+					else if (!columns_names[i].Equals("photo"))
+					{
+						TextBox inputDigit = new TextBox();
+						inputDigit.Left = 110;
+						inputDigit.Top = top_space;
+						inputDigit.Width = 100;
+						inputDigit.KeyPress += NumericTextBox_KeyPress;
+						if (!for_insert)
+							inputDigit.Text = values_for_update[i].ToString();
+						if (columns_names[i].Contains("_id"))
+						{
+							inputDigit.Text = for_insert ? Convert.ToString(ReturnNewId(columns_names[i], connection)) : inputDigit.Text = values_for_update[i].ToString();
+							inputDigit.Enabled = false;
+							if (for_insert)
+								AddValueToValues(i, inputDigit.Text);
+						}
+
+
+
+
+						AddLabel(i, top_space);
+
+						inputDigit.TextChanged += ValueChanged;
+						inputDigit.Name = $"Control {i}";
+						myForm.Controls.Add(inputDigit);
+						top_space += 30;
 					}
 
-
-
-
-					AddLabel(i, top_space);
-
-					inputDigit.TextChanged += ValueChanged;
-					inputDigit.Name = $"Control {i}";
-					myForm.Controls.Add(inputDigit);
-					top_space += 30;
+					
 				}
 
 				if (columns_types[i].Contains("Date"))
@@ -272,7 +326,7 @@ namespace Academy
 		}
 
 
-		void AddValueToValues(int i, string value) => values[i] = value;
+		void AddValueToValues(int i, object value) => values[i] = value;
 
 		void AddLabel(int index, int top_space)
 		{
@@ -304,7 +358,7 @@ namespace Academy
 				{
 
 
-					if (!String.IsNullOrEmpty(values[i]) && for_insert)
+					if (!String.IsNullOrEmpty((string)values[i]) && for_insert)
 					{
 						values[i] = $"N'{values[i]}'";
 					}
@@ -314,7 +368,7 @@ namespace Academy
 
 			for (int i = 0; i < columns_names.Count; i++)
 			{
-				if (!String.IsNullOrEmpty(values[i]))
+				if (!String.IsNullOrEmpty((string)values[i]))
 				{
 					if ((for_insert && i > 0))
 					{
@@ -415,6 +469,7 @@ $"IF NOT EXISTS(SELECT {primary_key} FROM {table} WHERE {condition} )BEGIN INSER
 		{
 			string[] fieldArray = fields.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			string[] valueArray = values.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			Console.WriteLine(values);
 
 			if (fieldArray.Length != valueArray.Length)
 				return false;
@@ -446,9 +501,22 @@ $"IF NOT EXISTS(SELECT {primary_key} FROM {table} WHERE {condition} )BEGIN INSER
 			return affectedRows > 0;
 		}
 
+		public bool UpdatePhoto(byte[] photo, int where_id)
+		{
+
+			string query = $"Update {table_name} SET [photo] = @image WHERE {columns_names[0]} = @whereId";
+			SqlCommand cmd = new SqlCommand(query, connection);
 
 
+			cmd.Parameters.Add("@image", System.Data.SqlDbType.Image).Value = photo;
+			cmd.Parameters.AddWithValue("@whereId", where_id);
 
+			Console.WriteLine(query);
+			connection.Open();
+			int affectedRows = cmd.ExecuteNonQuery();
+			connection.Close();
 
+			return affectedRows > 0;
+		}
 	}
 }

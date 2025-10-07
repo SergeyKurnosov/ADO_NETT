@@ -200,6 +200,7 @@ namespace DataSet
 				dataGridView.Width = 790;
 				dataGridView.Height = 350;
 				dataGridView.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+				dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 				dataGridView.DataSource = dts.ds.Tables[i];
 				dataGridView.CellDoubleClick += DataGridViewAll_CellDoubleClick;
 				dataGridView.CellValueChanged += dataGridView1_CellValueChanged;
@@ -209,7 +210,6 @@ namespace DataSet
 
 				tabPage.Controls.Add(dataGridView);
 
-				Console.WriteLine(dataGridView.Name.ToString());
 				if (dataGridView.Name == "Students")
 				{
 
@@ -219,7 +219,10 @@ namespace DataSet
 						(sender, e) =>
 						{
 							if (studentsGroups.SelectedValue.ToString() == "0")
+							{
 								dataGridView.DataSource = dts.ds.Tables["Students"];
+							}	
+								
 							else
 								dataGridView.DataSource = dts.ds.Tables["Students"].Select($"group='{studentsGroups.SelectedValue}'").CopyToDataTable();
 						};
@@ -299,23 +302,15 @@ namespace DataSet
 				DataTable currentTable = dataGridView.DataSource as DataTable;
 				for (int c = 0; c < currentTable.Columns.Count; c++)
 					comboColumn.Items.Add(currentTable.Columns[c].ColumnName.ToString());
-			
 
-				
+
+
 				dataGridView.Columns.Add(comboColumn);
 				/////////////////////////////////////////////////////////////////////////////
-
 
 				tabControl.TabPages.Add(tabPage);
 
 
-				DataGridViewColumnCollection dataGrid = dataGridView.DataSource as DataGridViewColumnCollection;
-				foreach (DataGridViewColumn column in dataGrid)
-				{
-					column.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-					int width = column.Width;
-					column.MinimumWidth = 200;
-				}
 
 			}
 		}

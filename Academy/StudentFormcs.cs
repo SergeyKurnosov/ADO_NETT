@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -51,7 +53,14 @@ namespace Academy
 
 			labelID.Visible = true;
 			labelID.Text = $"ID: {student.Rows[0][0].ToString()}";
+			////////////////////////////////////////////
+			///
+			//	BinaryFormatter bf = new BinaryFormatter();
+			//	MemoryStream ms = new MemoryStream();
+			////	bf.Serialize(ms, student.Rows[0][7]);
+			//	pictureBoxPhoto.Image = Image.FromStream(ms, true, true);
 
+			pictureBoxPhoto.Image = connector.DownLoadPhoto(stud_id, "Students", "photo");
 		}
 
 		void InitForm()

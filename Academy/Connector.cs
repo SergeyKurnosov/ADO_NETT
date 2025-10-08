@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,6 +70,22 @@ namespace Academy
 
 		}
 
+		public Image DownLoadPhoto(int id, string table, string field)
+		{
+			Image photo = null;
+			string cmd = $"SELECT {field} FROM {table} WHERE {GetPrimaryKeyName(table)}={id}";
+			SqlCommand command = new SqlCommand(cmd, connection);
+			connection.Open();
+			SqlDataReader reader = command.ExecuteReader();
+			if(reader.Read())
+			{
+				MemoryStream ms = new MemoryStream(reader[0] as byte[]);
+				photo = Image.FromStream(ms);
+			}
+
+			connection.Close();
+			return photo;
+		}
 		public void Update(string table, string field, string condition)
 		{
 			string cmd = $"UPDATE {table} SET{field} WHERE {condition}";

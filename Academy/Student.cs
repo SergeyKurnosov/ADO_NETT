@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using System.Drawing;
+using System.IO;
+
 namespace Academy
 {
 	internal class Student
@@ -16,9 +19,9 @@ namespace Academy
 		public string Email {  get; set; }
 		public string Phone {  get; set; }
 		public int Group {  get; set; }
-		public byte[] Photo {  get; set; }
+		public Image Photo {  get; set; }
 		public Student() { }
-		public Student(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group)
+		public Student(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group, Image photo)
 		{
 			Last_name = last_name;
 			First_name = first_name;
@@ -27,6 +30,13 @@ namespace Academy
 			Email = email;
 			Phone = phone;
 			Group = group;
+			Photo = photo;
+		}
+		public byte[] SerializePhoto()
+		{
+			MemoryStream ms = new MemoryStream();
+			Photo.Save(ms, Photo.RawFormat);
+			return ms.ToArray();
 		}
 
 		public override string ToString()

@@ -38,8 +38,14 @@ namespace Academy
 
 			GetNamesFields(connection, for_insert);
 
+
+
 			if (!for_insert)
+			{
 				values_for_update = GetRowValues(table_name, id_for_update);
+				Console.WriteLine("===");
+			}
+				
 
 
 			for (int i = 0; i < columns_names.Count; i++)
@@ -173,11 +179,15 @@ namespace Academy
 
 
 			SqlDataReader reader = cmd.ExecuteReader();
+
+			Console.WriteLine("reader открывается");
 			if (reader.Read())
 			{
+				Console.WriteLine("reader работает");
 				for (int i = 0; i < reader.FieldCount; i++)
 				{
 					result.Add(reader.GetValue(i));
+					
 				}
 			}
 			connection.Close();

@@ -60,7 +60,16 @@ namespace Academy
 			////	bf.Serialize(ms, student.Rows[0][7]);
 			//	pictureBoxPhoto.Image = Image.FromStream(ms, true, true);
 
+			try
+			{
 			pictureBoxPhoto.Image = connector.DownLoadPhoto(stud_id, "Students", "photo");
+
+			}
+			catch(Exception ex)
+			{ 
+			//	MessageBox.Show(ex.Message, "Error", )
+			}
+
 		}
 
 		void InitForm()

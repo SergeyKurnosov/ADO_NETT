@@ -253,8 +253,8 @@ namespace Academy
 					student.Student.ToString()
 					);
 
-				int id = Convert.ToInt32(connector.Scalar("SELECT MAX(stud_id) FROM Students"));
-				connector.UploadPhoto(student.Student.SerializePhoto(), id, "photo", "Students");
+				int i = Convert.ToInt32(connector.Scalar("SELECT MAX(stud_id) FROM Students"));
+				connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
 
 			}
 
@@ -264,17 +264,17 @@ namespace Academy
 		private void dataGridViewStudents_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			int i = Convert.ToInt32(dataGridViewStudents.SelectedRows[0].Cells[0].Value);
-			StudentForm form = new StudentForm(i);
-			DialogResult result = form.ShowDialog();
+			StudentForm student = new StudentForm(i);
+			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
 				connector.Update
 					(
 					"Students",
-					form.Student.ToStringUpdate(),
+					student.Student.ToStringUpdate(),
 					$"stud_id={i}"
 					);
-
+				connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
 				comboBoxStudentsGroup_SelectedIndexChanged(null, null);
 
 			}

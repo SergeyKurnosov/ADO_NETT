@@ -95,6 +95,7 @@ namespace Academy
 
 		private void buttonOK_Click(object sender, EventArgs e)
 		{
+			Console.WriteLine(textBoxLastName.Text);
 			Student = new Student
 				(
 					textBoxLastName.Text,
@@ -119,9 +120,6 @@ namespace Academy
 			    
 			
 			}
-		
-
-
 		}
 	}
 }

@@ -64,6 +64,13 @@
     <Compile Include="StudentFormcs.Designer.cs">
       <DependentUpon>StudentFormcs.cs</DependentUpon>
     </Compile>
+    <Compile Include="Teacher.cs" />
+    <Compile Include="TeacherForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TeacherForm.Designer.cs">
+      <DependentUpon>TeacherForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Week.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -79,6 +86,9 @@
     </Compile>
     <EmbeddedResource Include="StudentFormcs.resx">
       <DependentUpon>StudentFormcs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TeacherForm.resx">
+      <DependentUpon>TeacherForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

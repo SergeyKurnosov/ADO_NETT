@@ -282,6 +282,43 @@ namespace Academy
 
 
 		}
+
+		private void buttonAddTeacher_Click(object sender, EventArgs e)
+		{
+			TeacherForm teacher = new TeacherForm();
+			DialogResult result = teacher.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				connector.Insert
+					(
+					"Teachers",
+					"teacher_id,last_name,first_name,middle_name,birth_date,email,phone,work_since,rate",
+					 $"{Convert.ToInt32(connector.Scalar("SELECT MAX(teacher_id) FROM Teachers"))+1},{teacher.Teacher.ToString()}" 
+					);
+
+				int i = Convert.ToInt32(connector.Scalar("SELECT MAX(teacher_id) FROM Teachers"));
+				connector.UploadPhoto(teacher.Teacher.SerializePhoto(), i, "photo", "Teachers");
+
+			}
+		}
+
+		private void dataGridViewTeachers_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			int i = Convert.ToInt32(dataGridViewTeachers.SelectedRows[0].Cells[0].Value);
+			TeacherForm teacher = new TeacherForm(i);
+			DialogResult result = teacher.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				connector.Update
+					(
+					"Teachers",
+					teacher.Teacher.ToStringUpdate(),
+					$"teacher_id={i}"
+					);
+				connector.UploadPhoto(teacher.Teacher.SerializePhoto(), i, "photo", "Teachers");
+
+			}
+		}
 	}
 
 }

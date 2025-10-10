@@ -48,6 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connector.cs" />
+    <Compile Include="Humancs.cs" />
+    <Compile Include="HumanForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HumanForm.Designer.cs">
+      <DependentUpon>HumanForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,6 +72,9 @@
       <DependentUpon>StudentFormcs.cs</DependentUpon>
     </Compile>
     <Compile Include="Week.cs" />
+    <EmbeddedResource Include="HumanForm.resx">
+      <DependentUpon>HumanForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

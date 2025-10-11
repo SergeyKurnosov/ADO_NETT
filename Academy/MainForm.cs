@@ -60,7 +60,7 @@ namespace Academy
 			//	LoadGroups();
 			Console.WriteLine(this.Name);
 			Console.WriteLine(tabControl.TabCount);
-		
+
 			d_groupDirection = LoadDataToDictionary("*", "Directions");
 			d_studentsGroup = LoadDataToDictionary("*", "Groups");
 			comboBoxGroupsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
@@ -97,33 +97,33 @@ namespace Academy
 		}
 
 
-	//	DataTable Select(string fields, string tables, string conditions = "")
-	//	{
-	//		DataTable table = new DataTable();
-	//		string cmd =
-	//$@"SELECT {fields} FROM	{tables}";
-	//		if (!string.IsNullOrWhiteSpace(conditions))
-	//			cmd += $" WHERE {conditions}";
-	//		cmd += ";";
-	//		SqlCommand command = new SqlCommand(cmd, connection);
-	//		connection.Open();
-	//		SqlDataReader reader = command.ExecuteReader();
-	//		for (int i = 0; i < reader.FieldCount; i++)
-	//		{
-	//			table.Columns.Add(reader.GetName(i));
-	//		}
-	//		while (reader.Read())
-	//		{
-	//			DataRow row = table.NewRow();
-	//			for (int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
+		//	DataTable Select(string fields, string tables, string conditions = "")
+		//	{
+		//		DataTable table = new DataTable();
+		//		string cmd =
+		//$@"SELECT {fields} FROM	{tables}";
+		//		if (!string.IsNullOrWhiteSpace(conditions))
+		//			cmd += $" WHERE {conditions}";
+		//		cmd += ";";
+		//		SqlCommand command = new SqlCommand(cmd, connection);
+		//		connection.Open();
+		//		SqlDataReader reader = command.ExecuteReader();
+		//		for (int i = 0; i < reader.FieldCount; i++)
+		//		{
+		//			table.Columns.Add(reader.GetName(i));
+		//		}
+		//		while (reader.Read())
+		//		{
+		//			DataRow row = table.NewRow();
+		//			for (int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
 
-	//			table.Rows.Add(row);
-	//		}
-	//		reader.Close();
-	//		connection.Close();
+		//			table.Rows.Add(row);
+		//		}
+		//		reader.Close();
+		//		connection.Close();
 
-	//		return table;
-	//	}
+		//		return table;
+		//	}
 
 		void Insert(string table, string fields, string values)
 		{
@@ -259,24 +259,39 @@ namespace Academy
 			}
 
 
-		}                                     
+		}
 
 		private void dataGridViewStudents_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			int i = Convert.ToInt32(dataGridViewStudents.SelectedRows[0].Cells[0].Value);
-			StudentForm student = new StudentForm(i);
+			//StudentForm student = new StudentForm(i);
+			//DialogResult result = student.ShowDialog();
+			//if (result == DialogResult.OK)
+			//{
+			//	connector.Update
+			//		(
+			//		"Students",
+			//		student.Student.ToStringUpdate(),
+			//		$"stud_id={i}"
+			//		);
+			//	connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
+			//	comboBoxStudentsGroup_SelectedIndexChanged(null, null);
+
+			//}
+
+			DerivedStudentForm student = new DerivedStudentForm(i);
 			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
+				
 				connector.Update
 					(
-					"Students",
-					student.Student.ToStringUpdate(),
-					$"stud_id={i}"
+						"Students",
+						(student.Human as Student).ToStringUpdate(),
+						$"stud_id={i}"
 					);
-				connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
+				connector.UploadPhoto((student.Human as Student).SerializePhoto(), i, "photo", "Students");
 				comboBoxStudentsGroup_SelectedIndexChanged(null, null);
-
 			}
 
 

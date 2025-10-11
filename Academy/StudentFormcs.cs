@@ -24,6 +24,7 @@ namespace Academy
 			comboBoxGroup.DataSource = groups;
 			comboBoxGroup.DisplayMember = groups.Columns[1].ToString();
 			comboBoxGroup.ValueMember = groups.Columns[0].ToString();
+		
 			InitForm();
 		}
 
@@ -116,12 +117,7 @@ namespace Academy
 		    if(	dialog.ShowDialog() == DialogResult.OK)
 			{
 				pictureBoxPhoto.Image = Image.FromFile( dialog.FileName);
-			    
-			
 			}
-		
-
-
 		}
 	}
 }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using System.Configuration;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Academy
 {
@@ -56,8 +57,6 @@ namespace Academy
 			Console.WriteLine(connecctionString);
 			connection = new SqlConnection(connecctionString);
 			connector = new Connector();
-			//	LoadDirections();
-			//	LoadGroups();
 			Console.WriteLine(this.Name);
 			Console.WriteLine(tabControl.TabCount);
 
@@ -85,53 +84,9 @@ namespace Academy
 			string tableName = tabControl.TabPages[i].Name.Remove(0, "tabPage".Length);
 			DataGridView dataGridView = this.Controls.Find($"dataGridView{tableName}", true)[0] as DataGridView;
 			dataGridView.DataSource = connector.Select(queries[i].Fields, queries[i].Tables, queries[i].Condition);
-			//	toolStripStatusLabel.Text = $"{statusBarMessages[i]}: {dataGridView.RowCount-1}";
 			if (i == 1) ConvertLearningDays();
 			dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			dataGridView.ReadOnly = true;
-		}
-
-		void FillStatusBar(int i)
-		{
-
-		}
-
-
-		//	DataTable Select(string fields, string tables, string conditions = "")
-		//	{
-		//		DataTable table = new DataTable();
-		//		string cmd =
-		//$@"SELECT {fields} FROM	{tables}";
-		//		if (!string.IsNullOrWhiteSpace(conditions))
-		//			cmd += $" WHERE {conditions}";
-		//		cmd += ";";
-		//		SqlCommand command = new SqlCommand(cmd, connection);
-		//		connection.Open();
-		//		SqlDataReader reader = command.ExecuteReader();
-		//		for (int i = 0; i < reader.FieldCount; i++)
-		//		{
-		//			table.Columns.Add(reader.GetName(i));
-		//		}
-		//		while (reader.Read())
-		//		{
-		//			DataRow row = table.NewRow();
-		//			for (int i = 0; i < reader.FieldCount; i++) row[i] = reader[i];
-
-		//			table.Rows.Add(row);
-		//		}
-		//		reader.Close();
-		//		connection.Close();
-
-		//		return table;
-		//	}
-
-		void Insert(string table, string fields, string values)
-		{
-			string cmd = $"INSERT {table}({fields}) VALUES ({values})";
-			SqlCommand command = new SqlCommand(cmd, connection);
-			connection.Open();
-			command.ExecuteNonQuery();
-			connection.Close();
 		}
 
 		void ConvertLearningDays()
@@ -157,25 +112,6 @@ namespace Academy
 			SqlDataReader reader = command.ExecuteReader();
 			while (reader.Read())
 			{
-				//comboBoxGroupsDirection.Items.Add(reader[1]);
-				dictionary.Add(reader[1].ToString(), Convert.ToInt32(reader[0]));
-			}
-			reader.Close();
-			connection.Close();
-			return dictionary;
-		}
-
-		Dictionary<string, int> LoadDataToCombobox(string fields, string tables)
-		{
-			Dictionary<string, int> dictionary = new Dictionary<string, int>();
-			dictionary.Add("Все", 0);
-			string cmd = $"SELECT {fields} FROM {tables}";
-			SqlCommand command = new SqlCommand(cmd, connection);
-			connection.Open();
-			SqlDataReader reader = command.ExecuteReader();
-			while (reader.Read())
-			{
-				//	comboBoxGroupsDirections.Items.Add(reader[1]);
 				dictionary.Add(reader[1].ToString(), Convert.ToInt32(reader[0]));
 			}
 			reader.Close();
@@ -244,8 +180,6 @@ namespace Academy
 			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-
-				//todo:делаем insert в базу:
 				connector.Insert
 					(
 					"Students",
@@ -264,20 +198,6 @@ namespace Academy
 		private void dataGridViewStudents_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			int i = Convert.ToInt32(dataGridViewStudents.SelectedRows[0].Cells[0].Value);
-			//StudentForm student = new StudentForm(i);
-			//DialogResult result = student.ShowDialog();
-			//if (result == DialogResult.OK)
-			//{
-			//	connector.Update
-			//		(
-			//		"Students",
-			//		student.Student.ToStringUpdate(),
-			//		$"stud_id={i}"
-			//		);
-			//	connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
-			//	comboBoxStudentsGroup_SelectedIndexChanged(null, null);
-
-			//}
 
 			DerivedStudentForm student = new DerivedStudentForm(i);
 			DialogResult result = student.ShowDialog();

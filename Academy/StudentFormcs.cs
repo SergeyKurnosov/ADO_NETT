@@ -30,17 +30,7 @@ namespace Academy
 
 		public StudentForm(int stud_id) : this()
 		{
-			//string[] fullName = row[1].ToString().Split(' ');
-			//textBoxLastName.Text = fullName[0];
-			//textBoxFirstName.Text = fullName[1];
-			//textBoxMiddleName.Text = fullName[2];
 
-			//dateTimePickerBirtDate.Text = row[2].ToString();
-			//textBoxEmail.Text = row[3].ToString();
-			//textBoxPhone.Text = row[6].ToString();
-			//comboBoxGroup.SelectedValue = row[7];
-
-			//int stud_id = Convert.ToInt32(row[0]);
 			DataTable student = connector.Select("*", "Students", $"stud_id={stud_id}");
 
 			textBoxLastName.Text = student.Rows[0][1].ToString();
@@ -54,12 +44,6 @@ namespace Academy
 
 			labelID.Visible = true;
 			labelID.Text = $"ID: {student.Rows[0][0].ToString()}";
-			////////////////////////////////////////////
-			///
-			//	BinaryFormatter bf = new BinaryFormatter();
-			//	MemoryStream ms = new MemoryStream();
-			////	bf.Serialize(ms, student.Rows[0][7]);
-			//	pictureBoxPhoto.Image = Image.FromStream(ms, true, true);
 
 			try
 			{
@@ -68,7 +52,6 @@ namespace Academy
 			}
 			catch(Exception ex)
 			{ 
-			//	MessageBox.Show(ex.Message, "Error", )
 			}
 
 		}
@@ -82,16 +65,6 @@ namespace Academy
 			textBoxEmail.Text = "sharlott@mail.com";
 			textBoxPhone.Text = "+7(123)456-77-88";
 			comboBoxGroup.SelectedIndex = 10;
-		}
-
-		void Compress()
-		{
-			Student.Last_name = textBoxLastName.Text;
-			Student.First_name = textBoxFirstName.Text;
-			Student.Middle_name = textBoxMiddleName.Text;
-			Student.Email = textBoxEmail.Text;
-			Student.Phone = textBoxPhone.Text;
-			Student.Group = Convert.ToInt32(comboBoxGroup.SelectedValue);
 		}
 
 		private void buttonOK_Click(object sender, EventArgs e)

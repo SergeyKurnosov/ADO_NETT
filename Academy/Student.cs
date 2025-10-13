@@ -18,24 +18,11 @@ namespace Academy
 		public Student() { }
 		public Student(int stud_id)
 		{
-			Connector connector = new Connector();
 			DataTable student = connector.Select("*", "Students", $"stud_id={stud_id}");
+			InitFields(student, stud_id);
 			ID = stud_id;
-			Last_name = student.Rows[0][1].ToString();
-			First_name = student.Rows[0][2].ToString();
-			Middle_name = student.Rows[0][3].ToString();
-			BirthDate = student.Rows[0][4].ToString();
-			Email = student.Rows[0][5].ToString();
-			Phone = student.Rows[0][6].ToString();
 			Group = Convert.ToInt32( student.Rows[0][8] );
-			try
-			{
-				Photo = connector.DownLoadPhoto(stud_id, "Students", "photo");
-			}
-			catch(Exception)
-			{
-			}
-			
+
 		}
 		public Student(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group, Image photo)
 		{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Academy
 {
 	internal class Human
 	{
+		public Connector connector = new Connector();
 		public string Last_name { get; set; }
 		public string First_name { get; set; }
 		public string Middle_name { get; set; }
@@ -27,12 +29,30 @@ namespace Academy
 			Email = email;
 			Phone = phone;
 			Photo = photo;
+		//	connector = new Connector();
 		}
 		public byte[] SerializePhoto()
 		{
 			MemoryStream ms = new MemoryStream();
 			Photo.Save(ms, Photo.RawFormat);
 			return ms.ToArray();
+		}
+
+		protected void InitFields(DataTable table, int id)
+		{
+			Last_name = table.Rows[0][1].ToString();
+			First_name = table.Rows[0][2].ToString();
+			Middle_name = table.Rows[0][3].ToString();
+			BirthDate = table.Rows[0][4].ToString();
+			Email = table.Rows[0][5].ToString();
+			Phone = table.Rows[0][6].ToString();
+			try
+			{
+				Photo = connector.DownLoadPhoto(id, "Students", "photo");
+			}
+			catch (Exception)
+			{
+			}
 		}
 
 		public override string ToString()

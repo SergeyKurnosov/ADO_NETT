@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Academy", "Academy\Academy.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSet", "DataSet\DataSet.csproj", "{3D6D2433-E7CC-4EB6-BFA2-1CF5E7B39AB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LINQ", "ДШТЙ\LINQ.csproj", "{F067EC9D-366B-4B66-98D7-F43A84D059C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3D6D2433-E7CC-4EB6-BFA2-1CF5E7B39AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D6D2433-E7CC-4EB6-BFA2-1CF5E7B39AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D6D2433-E7CC-4EB6-BFA2-1CF5E7B39AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F067EC9D-366B-4B66-98D7-F43A84D059C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F067EC9D-366B-4B66-98D7-F43A84D059C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F067EC9D-366B-4B66-98D7-F43A84D059C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F067EC9D-366B-4B66-98D7-F43A84D059C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

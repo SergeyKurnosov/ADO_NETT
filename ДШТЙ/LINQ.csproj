@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E142A786-16E6-45F7-9B27-24A0AEBC5D7E}</ProjectGuid>
+    <ProjectGuid>{F067EC9D-366B-4B66-98D7-F43A84D059C5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Academy</RootNamespace>
-    <AssemblyName>Academy</AssemblyName>
+    <RootNamespace>ДШТЙ</RootNamespace>
+    <AssemblyName>ДШТЙ</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,7 +34,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,55 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseHumanForm.cs">
+    <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BaseHumanForm.Designer.cs">
-      <DependentUpon>BaseHumanForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Connector.cs" />
-    <Compile Include="DerivedStudentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DerivedStudentForm.Designer.cs">
-      <DependentUpon>DerivedStudentForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Humancs.cs" />
-    <Compile Include="LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query.cs" />
-    <Compile Include="Student.cs" />
-    <Compile Include="StudentFormcs.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StudentFormcs.Designer.cs">
-      <DependentUpon>StudentFormcs.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Week.cs" />
-    <EmbeddedResource Include="BaseHumanForm.resx">
-      <DependentUpon>BaseHumanForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DerivedStudentForm.resx">
-      <DependentUpon>DerivedStudentForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -105,9 +63,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="StudentFormcs.resx">
-      <DependentUpon>StudentFormcs.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

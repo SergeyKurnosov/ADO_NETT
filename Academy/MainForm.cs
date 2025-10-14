@@ -176,7 +176,8 @@ namespace Academy
 
 		private void buttonAdd_Click(object sender, EventArgs e)
 		{
-			StudentForm student = new StudentForm();
+		//	StudentForm student = new StudentForm();
+			DerivedStudentForm student = new DerivedStudentForm();
 			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
@@ -184,11 +185,11 @@ namespace Academy
 					(
 					"Students",
 					"last_name,first_name,middle_name,birth_date,email,phone,[group]",
-					student.Student.ToString()
+					(student.Human as Student).ToString()
 					);
 
 				int i = Convert.ToInt32(connector.Scalar("SELECT MAX(stud_id) FROM Students"));
-				connector.UploadPhoto(student.Student.SerializePhoto(), i, "photo", "Students");
+				connector.UploadPhoto(student.Human.SerializePhoto(), i, "photo", "Students");
 
 			}
 
@@ -213,9 +214,44 @@ namespace Academy
 				connector.UploadPhoto((student.Human as Student).SerializePhoto(), i, "photo", "Students");
 				comboBoxStudentsGroup_SelectedIndexChanged(null, null);
 			}
+		}
+		//===============================================================================================================================
+		private void buttonAddTeacher_Click(object sender, EventArgs e)
+		{
+			DerivedTeacherForm teacher = new DerivedTeacherForm();
+			DialogResult result = teacher.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				connector.Insert
+					(
+					"Teachers",
+					"teacher_id,last_name,first_name,middle_name,birth_date,email,phone,work_since,rate",
+					$"{Convert.ToInt32(connector.Scalar("SELECT MAX(teacher_id) FROM Teachers"))+1},{(teacher.Human as Teacher).ToString()}"
+					);
 
+				int i = Convert.ToInt32(connector.Scalar("SELECT MAX(teacher_id) FROM Teachers"));
+				connector.UploadPhoto(teacher.Human.SerializePhoto(), i, "photo", "Teachers");
 
+			}
+		}
 
+		private void dataGridViewTeachers_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			int i = Convert.ToInt32(dataGridViewTeachers.SelectedRows[0].Cells[0].Value);
+
+			DerivedTeacherForm teacher = new DerivedTeacherForm(i);
+			DialogResult result = teacher.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+
+				connector.Update
+					(
+						"Teachers",
+						(teacher.Human as Teacher).ToStringUpdate(),
+						$"teacher_id={i}"
+					);
+				connector.UploadPhoto((teacher.Human as Teacher).SerializePhoto(), i, "photo", "Teachers");
+			}
 		}
 	}
 

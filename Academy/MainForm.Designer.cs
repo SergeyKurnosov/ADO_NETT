@@ -31,6 +31,7 @@
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.tabPageTeachers = new System.Windows.Forms.TabPage();
+			this.buttonAddTeacher = new System.Windows.Forms.Button();
 			this.dataGridViewTeachers = new System.Windows.Forms.DataGridView();
 			this.tabPageDisciplines = new System.Windows.Forms.TabPage();
 			this.dataGridViewDisciplines = new System.Windows.Forms.DataGridView();
@@ -80,6 +81,7 @@
 			// 
 			// tabPageTeachers
 			// 
+			this.tabPageTeachers.Controls.Add(this.buttonAddTeacher);
 			this.tabPageTeachers.Controls.Add(this.dataGridViewTeachers);
 			this.tabPageTeachers.Location = new System.Drawing.Point(4, 22);
 			this.tabPageTeachers.Name = "tabPageTeachers";
@@ -88,6 +90,16 @@
 			this.tabPageTeachers.TabIndex = 6;
 			this.tabPageTeachers.Text = "Teachers";
 			this.tabPageTeachers.UseVisualStyleBackColor = true;
+			// 
+			// buttonAddTeacher
+			// 
+			this.buttonAddTeacher.Location = new System.Drawing.Point(687, 5);
+			this.buttonAddTeacher.Name = "buttonAddTeacher";
+			this.buttonAddTeacher.Size = new System.Drawing.Size(75, 23);
+			this.buttonAddTeacher.TabIndex = 1;
+			this.buttonAddTeacher.Text = "Добавить";
+			this.buttonAddTeacher.UseVisualStyleBackColor = true;
+			this.buttonAddTeacher.Click += new System.EventHandler(this.buttonAddTeacher_Click);
 			// 
 			// dataGridViewTeachers
 			// 
@@ -99,6 +111,7 @@
 			this.dataGridViewTeachers.Name = "dataGridViewTeachers";
 			this.dataGridViewTeachers.Size = new System.Drawing.Size(776, 362);
 			this.dataGridViewTeachers.TabIndex = 0;
+			this.dataGridViewTeachers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridViewTeachers_MouseDoubleClick);
 			// 
 			// tabPageDisciplines
 			// 
@@ -329,6 +342,7 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ComboBox comboBoxStudentsDirection;
+		private System.Windows.Forms.Button buttonAddTeacher;
 	}
 }
 

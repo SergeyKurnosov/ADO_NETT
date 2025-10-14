@@ -20,41 +20,27 @@ namespace Academy
 		public Teacher(int teacher_ID)
 		{
 			DataTable teacher = connector.Select("*", "Teachers", $"teacher_id={teacher_ID}");
-			InitFields(teacher, teacher_ID);
+			InitFields(teacher, teacher_ID, "Teachers");
 			ID = teacher_ID;
 			WorkSince = teacher.Rows[0][8].ToString();
 			Rate = teacher.Rows[0][9].ToString();
 		}
 
-		public Teacher(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, Image photo, string work_since, string rate)
+		public Teacher(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, Image photo, string work_since, string rate):base(last_name,first_name,middle_name,birthDate,email,phone,photo)
 		{
-			Last_name = last_name;
-			First_name = first_name;
-			Middle_name = middle_name;
-			BirthDate = birthDate;
-			Email = email;
-			Phone = phone;
-			Photo = photo;
 			WorkSince = work_since;
 			Rate = rate;
 		}
 
 		public override string ToString()
 		{
-			return $"N'{base.ToString()}','{WorkSince}','{Rate}'";
+			return $"{base.ToString()},'{WorkSince}','{Rate}'";
 		}
 
 		public override string ToStringUpdate()
 		{
 			return $"{base.ToStringUpdate()},work_since='{WorkSince}',rate='{Rate}'";
 		}
-
-
-
-
-
-
-
 
 	}
 }

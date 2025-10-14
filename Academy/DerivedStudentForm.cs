@@ -33,6 +33,7 @@ namespace Academy
 			comboBoxGroup.SelectedValue = (Human as Student).Group;
 			labelID.Text = (Human as Student).ID.ToString();
 		}
+		// Convert.ToInt32(connector.Scalar("SELECT MAX(teacher_id) FROM Teachers"))
 
 		protected override void buttonOK_Click(object sender, EventArgs e)
 		{

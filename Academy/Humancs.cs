@@ -20,7 +20,7 @@ namespace Academy
 		public string Phone { get; set; }
 		public Image Photo { get; set; }
 		public Human() { }
-		public Human(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group, Image photo)
+		public Human(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, Image photo)
 		{
 			Last_name = last_name;
 			First_name = first_name;
@@ -38,7 +38,7 @@ namespace Academy
 			return ms.ToArray();
 		}
 
-		protected void InitFields(DataTable table, int id)
+		protected void InitFields(DataTable table, int id, string table_name)
 		{
 			Last_name = table.Rows[0][1].ToString();
 			First_name = table.Rows[0][2].ToString();
@@ -48,7 +48,7 @@ namespace Academy
 			Phone = table.Rows[0][6].ToString();
 			try
 			{
-				Photo = connector.DownLoadPhoto(id, "Students", "photo");
+				Photo = connector.DownLoadPhoto(id, table_name, "photo");
 			}
 			catch (Exception)
 			{

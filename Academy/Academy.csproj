@@ -91,6 +91,9 @@
     <EmbeddedResource Include="DerivedStudentForm.resx">
       <DependentUpon>DerivedStudentForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DerivedTeacherForm.resx">
+      <DependentUpon>DerivedTeacherForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -19,21 +19,14 @@ namespace Academy
 		public Student(int stud_id)
 		{
 			DataTable student = connector.Select("*", "Students", $"stud_id={stud_id}");
-			InitFields(student, stud_id);
+			InitFields(student, stud_id, "Students");
 			ID = stud_id;
 			Group = Convert.ToInt32( student.Rows[0][8] );
 
 		}
-		public Student(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group, Image photo)
+		public Student(string last_name, string first_name, string middle_name, string birthDate, string email, string phone, int group, Image photo):base(last_name, first_name, middle_name, birthDate, email, phone, photo)
 		{
-			Last_name = last_name;
-			First_name = first_name;
-			Middle_name = middle_name;
-			BirthDate = birthDate;
-			Email = email;
-			Phone = phone;
 			Group = group;
-			Photo = photo;
 		}
 
 		public override string ToString()

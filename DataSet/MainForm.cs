@@ -228,6 +228,22 @@ namespace DataSet
 
 		private void comboBoxDisciplinesForDirection_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			DataRowView selectDirection = (DataRowView) comboBoxDisciplinesForDirection.SelectedItem;
+			//int direction = Convert.ToInt32(selectDirection["direction_id"]);
+			string direction =  selectDirection["direction_id"].ToString();
+
+			DataTable Disciplines = DisciplinesDirectionsRelation.Tables["Disciplines"];
+			DataTable DDR = DisciplinesDirectionsRelation.Tables["DisciplinesDirectionsRelation"];
+
+			dataGridViewDiscipline.DataSource =
+				(
+				from ddr in DDR.AsEnumerable()
+				where ddr.Field<string>("direction") == direction
+				join discipline in Disciplines.AsEnumerable()
+				on ddr.Field<string>("discipline") equals discipline.Field<string>("discipline_id")
+				select discipline
+				).CopyToDataTable();
+
 			////1 получаем набор значений из связующей таблицы
 			//DataRow[] ddr = DisciplinesDirectionsRelation.Tables["DisciplinesDirectionsRelation"]
 			//	.Select($"direction={comboBoxDisciplinesForDirection.SelectedValue}");

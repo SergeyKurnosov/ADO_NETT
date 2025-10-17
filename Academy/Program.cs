@@ -16,7 +16,12 @@ namespace Academy
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+
+			Authorization authorization = new Authorization();
+			Application.Run(authorization);
+			Application.Run(new MainForm(authorization.final_connection_string));		
+
+			
 		}
 	}
 }

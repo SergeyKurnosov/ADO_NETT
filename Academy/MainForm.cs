@@ -11,12 +11,13 @@ using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using System.Configuration;
 using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace Academy
 {
 	public partial class MainForm : Form
 	{
-		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+		string connecctionString;// = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 		SqlConnection connection;
 		Connector connector;
 		Dictionary<string, int> d_groupDirection;
@@ -49,33 +50,65 @@ namespace Academy
 			"Количество дисциплин ",
 			"Количество преподователей "
 		};
-		public MainForm()
+		/*
+		    "Data Source=192.168.100.105;
+			 Initial Catalog=PD_321;
+			 Integrated Security=True;
+			 Connect Timeout=5;
+			 Encrypt=True;
+			 TrustServerCertificate=True;
+			 ApplicationIntent=ReadWrite;
+			 MultiSubnetFailover=False"
+		 */
+		public MainForm(string conn)
 		{
 			InitializeComponent();
 			AllocConsole();
-			connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
-			Console.WriteLine(connecctionString);
-			connection = new SqlConnection(connecctionString);
-			connector = new Connector();
-			Console.WriteLine(this.Name);
-			Console.WriteLine(tabControl.TabCount);
 
-			d_groupDirection = LoadDataToDictionary("*", "Directions");
-			d_studentsGroup = LoadDataToDictionary("*", "Groups");
-			comboBoxGroupsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
-			comboBoxStudentsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
-			comboBoxStudentsGroup.Items.AddRange(d_studentsGroup.Keys.ToArray());
-			comboBoxStudentsDirection.SelectedIndex = comboBoxGroupsDirection.SelectedIndex = 0;
-			comboBoxStudentsGroup.SelectedIndex = 0;
+			Console.WriteLine(conn);
+			if (string.IsNullOrEmpty(conn))
+				return;
 
-			tabControl.SelectedIndex = 0;
+			//		connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
+			        connecctionString = conn;
+		//	connecctionString = "Data Source=192.168.100.105;Initial Catalog=PD_321;Integrated Security=false;Encrypt=true;TrustServerCertificate=true;User ID=user;Password=111;";
 
-			for (int i = 0; i < tabControl.TabCount; i++)
+			try
 			{
-				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
-					+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
-			}
+				try
+				{
+					connection = new SqlConnection(connecctionString);
+					connector = new Connector();
+					d_groupDirection = LoadDataToDictionary("*", "Directions");
+					d_studentsGroup = LoadDataToDictionary("*", "Groups");			
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Контролная точка");
+					return;
+				}
 
+
+				comboBoxGroupsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
+				comboBoxStudentsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
+				comboBoxStudentsGroup.Items.AddRange(d_studentsGroup.Keys.ToArray());
+				
+				comboBoxStudentsDirection.SelectedIndex = comboBoxGroupsDirection.SelectedIndex = 0;
+				comboBoxStudentsGroup.SelectedIndex = 0;
+				tabControl.SelectedIndex = 0;
+				
+				for (int i = 0; i < tabControl.TabCount; i++)
+				{
+					(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
+						+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("вот эта ошибка произошла");
+				Console.WriteLine(	ex.Message);
+				return;
+			}
 
 		}
 

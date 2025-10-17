@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authorization.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Authorization.Designer.cs">
+      <DependentUpon>Authorization.cs</DependentUpon>
+    </Compile>
     <Compile Include="BaseHumanForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,7 @@
     <Compile Include="DerivedTeacherForm.Designer.cs">
       <DependentUpon>DerivedTeacherForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EncDecClass.cs" />
     <Compile Include="Humancs.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -85,6 +92,9 @@
     </Compile>
     <Compile Include="Teacher.cs" />
     <Compile Include="Week.cs" />
+    <EmbeddedResource Include="Authorization.resx">
+      <DependentUpon>Authorization.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BaseHumanForm.resx">
       <DependentUpon>BaseHumanForm.cs</DependentUpon>
     </EmbeddedResource>

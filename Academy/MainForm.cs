@@ -12,11 +12,16 @@ using System.Runtime.InteropServices;
 using System.Configuration;
 using System.Security.Cryptography.X509Certificates;
 
+using DataBaseTools;
+
 namespace Academy
 {
 	public partial class MainForm : Form
 	{
-		string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+	//	LoginData loginData { get; set; }
+		LoginForm loginForm { get; set; }
+		//string connecctionString = "Data Source=SERGEY\\MSSQLSERVER17;Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+		string connecctionString = "";
 		SqlConnection connection;
 		Connector connector;
 		Dictionary<string, int> d_groupDirection;
@@ -53,30 +58,42 @@ namespace Academy
 		{
 			InitializeComponent();
 			AllocConsole();
-			connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
-			Console.WriteLine(connecctionString);
-			connection = new SqlConnection(connecctionString);
-			connector = new Connector();
-			Console.WriteLine(this.Name);
-			Console.WriteLine(tabControl.TabCount);
+			loginForm = new LoginForm();
+			//	connecctionString = ConfigurationManager.ConnectionStrings["PD_321"].ConnectionString;
 
-			d_groupDirection = LoadDataToDictionary("*", "Directions");
-			d_studentsGroup = LoadDataToDictionary("*", "Groups");
-			comboBoxGroupsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
-			comboBoxStudentsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
-			comboBoxStudentsGroup.Items.AddRange(d_studentsGroup.Keys.ToArray());
-			comboBoxStudentsDirection.SelectedIndex = comboBoxGroupsDirection.SelectedIndex = 0;
-			comboBoxStudentsGroup.SelectedIndex = 0;
-
-			tabControl.SelectedIndex = 0;
-
-			for (int i = 0; i < tabControl.TabCount; i++)
+			if (loginForm.ShowDialog() == DialogResult.OK)
 			{
-				(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
-					+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
+				connecctionString = GetLoginData(loginForm.LoginData);
+				Console.WriteLine(connecctionString);
+				connection = new SqlConnection(connecctionString);
+				connector = new Connector();
+				Console.WriteLine(this.Name);
+				Console.WriteLine(tabControl.TabCount);
+
+				d_groupDirection = LoadDataToDictionary("*", "Directions");
+				d_studentsGroup = LoadDataToDictionary("*", "Groups");
+				comboBoxGroupsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
+				comboBoxStudentsDirection.Items.AddRange(d_groupDirection.Keys.ToArray());
+				comboBoxStudentsGroup.Items.AddRange(d_studentsGroup.Keys.ToArray());
+				comboBoxStudentsDirection.SelectedIndex = comboBoxGroupsDirection.SelectedIndex = 0;
+				comboBoxStudentsGroup.SelectedIndex = 0;
+
+				tabControl.SelectedIndex = 0;
+
+				for (int i = 0; i < tabControl.TabCount; i++)
+				{
+					(this.Controls.Find($"dataGridView{tabControl.TabPages[i].Name.Remove(0, "tabPage".Length)}", true)[0] as DataGridView).RowsAdded
+						+= new DataGridViewRowsAddedEventHandler(this.dataGridViewChanged);
+				}
 			}
 
 
+
+		}
+
+		string GetLoginData(LoginData loginData)
+		{
+			return $"Data Source={loginData.Server};Initial Catalog=PD_321;Integrated Security=True;Connect Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;user id={loginData.Login};password={loginData.Password}";
 		}
 
 		void LoadTab(int i)
@@ -203,7 +220,7 @@ namespace Academy
 			DialogResult result = student.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-				
+
 				connector.Update
 					(
 						"Students",

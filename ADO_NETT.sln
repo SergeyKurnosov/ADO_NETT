@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseTools", "DataBaseTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseToolsCheck", "DataBaseToolsCheck\DataBaseToolsCheck.csproj", "{767475C8-A2C3-446E-8DBF-2FAE7AFACDB7}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AcademySetup", "AcademySetup\AcademySetup.vdproj", "{2633993C-B17A-7FD1-05D8-74F6BF5CBC14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,8 @@ Global
 		{767475C8-A2C3-446E-8DBF-2FAE7AFACDB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{767475C8-A2C3-446E-8DBF-2FAE7AFACDB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{767475C8-A2C3-446E-8DBF-2FAE7AFACDB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2633993C-B17A-7FD1-05D8-74F6BF5CBC14}.Debug|Any CPU.ActiveCfg = Debug
+		{2633993C-B17A-7FD1-05D8-74F6BF5CBC14}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -61,6 +61,7 @@
       <DependentUpon>DerivedStudentForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Humancs.cs" />
+    <Compile Include="LoginData.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +121,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataBaseTools\DataBaseTools.csproj">
+      <Project>{fc1572af-e69f-4848-bcd9-9702f51a8968}</Project>
+      <Name>DataBaseTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
